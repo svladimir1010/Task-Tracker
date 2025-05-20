@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Task Tracker</title>
-</head>
-<body>
-    <h1>Welcome to Task Tracker</h1>
-</body>
+	<head>
+		<title>Task Tracker</title>
+	</head>
+	<body>
+		<h1>Task Tracker</h1>
+		<a href="{{ url_for('main.add_task') }}">Add New Task</a>
+		<ul>
+			{% for task in tasks %}
+			<li> {{ task.title }} ({{ task.category }}) - {{ task.description }}</li>
+			{% endfor %}
+		</ul>
+	</body>
 </html>

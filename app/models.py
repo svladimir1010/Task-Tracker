@@ -1,6 +1,12 @@
-from app import create_app
+from app import db
 
-app = create_app()
 
-if __name__ == "__main__":
-    app.run(debug=True)
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    status = db.Column(db.String(20), default='Not Started')
+    category = db.Column(db.String(50), default='General')
+
+    def __repr__(self):
+        return f'<Task {self.title}>'
