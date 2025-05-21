@@ -22,3 +22,23 @@ def add_task():
         db.session.commit()
         return redirect(url_for('main.index'))
     return render_template('add_task.html')
+
+@bp.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit_task(id):
+    task = Task.query.get_or_404(id)
+    if request.method == 'POST':
+        task.title = request.form['title']
+        task.description = request.form.get('description')
+        task.category = request.form.get('category', 'General')
+        task.status = request.form.get('status', 'Not Started')
+        db.session.commit()
+        return redirect(url_for('main.index'))
+    return render_template('edit_task.html', task=task)
+
+@bp.route('/delete/<int:id>', methods=['POST'])
+def delete_task(id):
+    task = Task.query.get_or_404(id)
+    db.session.delete(task)
+    db.session.commit()
+    flash('Task deleted successfully!', 'success')
+    return redirect(url_for('main.index'))

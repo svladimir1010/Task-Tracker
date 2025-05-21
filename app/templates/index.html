@@ -1,15 +1,18 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Task Tracker</title>
-	</head>
-	<body>
-		<h1>Task Tracker</h1>
-		<a href="{{ url_for('main.add_task') }}">Add New Task</a>
-		<ul>
-			{% for task in tasks %}
-			<li> {{ task.title }} ({{ task.category }}) - {{ task.description }}</li>
-			{% endfor %}
-		</ul>
-	</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Task Tracker{%endblock%}
+{% block content %}
+	<h1 class="mt-4">Task Tracker</h1>
+	<a href="{{ url_for('main.add_task') }}" class="btn btn-primary mb-3">Add New Task</a>
+	<ul class="list-group">
+		{% for task in tasks %}
+		<li class="list-group-item">
+			{{ task.title }} ({{ task.category }}) - {{ task.status }}
+			<a href="{{ url_for('main.edit_task', id=task.id) }}">Edit</a>
+			<form action="{{ url_for('main.delete_task', id=task.id) }}" method="POST" style="display:inline;">
+				<button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+			</form>
+		</li>
+		{% endfor %}
+	</ul>
+{% endblock %}
+

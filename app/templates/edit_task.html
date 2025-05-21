@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Edit Task{%endblock%}
+{% block content %}
+<h1 class="mt-4">Edit Task</h1>
+<form method="POST" class="mt-3">
+	<div class="mb-3">
+		<label class="form-label">Title:</label>
+		<input type="text" name="title" class="form-control" value="{{ task.title }}" required>
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Description:</label>
+		<textarea name="description" class="form-control">{{ task.description }}</textarea>
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Category:</label>
+		<input type="text" name="category" class="form-control" value="{{ task.category }}">
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Status:</label>
+		<select name="status" class="form-select">
+			<option value="Not Started" {% if task.status=="Not Started" %}selected{% endif %}>Not Started</option>
+			<option value="In Progress" {% if task.status=="In Progress" %}selected{% endif %}>In Progress</option>
+			<option value="Completed" {% if task.status=="Completed" %}selected{% endif %}>Completed</option>
+		</select>
+	</div>
+	<button type="submit" class="btn btn-success">Update Task</button>
+</form>
+<a href="{{ url_for('main.index') }}" class="btn btn-secondary mt-3">Back to Tasks</a>
+{% endblock %}
+
