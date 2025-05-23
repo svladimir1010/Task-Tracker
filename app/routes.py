@@ -41,11 +41,18 @@ def logout():
     return redirect(url_for('main.login'))
 
 
-@bp.route('/')
+@bp.route('/', methods=['GET'])
 @login_required
 def index():
-    tasks = Task.query.filter_by(user_id=current_user.id).all()
-    return render_template('index.html', tasks=tasks)
+    status_filter = request.args.get('status')
+    category_filter = request.args.get('category')
+    query = Task.query.filter_by(user_id=current_user.id)
+    if status_filter:
+        query = query.filter_by(status=status_filter)
+    if category_filter:
+        query = query.filter_by(category=category_filter)
+    tasks = query.all()
+    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter)
 
 
 @bp.route('/add', methods=['GET', 'POST'])
