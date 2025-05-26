@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Add Task{%endblock%}
+{% block content %}
+<h1 class="mt-4">Tasks Statistics</h1>
+<ul class="list-group">
+	<li class="list-group-item">Not Started:{{ stats['Not Started'] }}</li>
+	<li class="list-group-item">In Progress: {{ stats['In Progress'] }}</li>
+	<li class="list-group-item">Completed: {{ stats['Completed'] }}</li>
+</ul>
+<a href="{{ url_for('main.index') }}" class="btn btn-secondary mt-3">Back to Tasks</a>
+{% endblock %}
+

@@ -91,3 +91,15 @@ def delete_task(id):
     db.session.commit()
     flash('Task deleted successfully!', 'success')
     return redirect(url_for('main.index'))
+
+@bp.route('/stats')
+@login_required
+def stats():
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    stats = {
+        'Not Started': len([t for t in tasks if t.status == 'Not Started' ]),
+        'In Progress': len([t for t in tasks if t.status == 'In Progress' ]),
+        'Completed': len([t for t in tasks if t.status == 'Completed' ])
+    }
+    return render_template('stats.html', stats=stats)
+
