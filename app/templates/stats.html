@@ -31,7 +31,8 @@
 	<div class="progress">
 		<div class="progress-bar bg-success" role="progressbar"
 		     style="width: {{ (stats['Completed'] / total * 100) | round(2) }}%"
-		     aria-valuenow="{{ (stats['Completed'] / total * 100) | round(2) }}" aria-valuemin="0" aria-valuemax="100">
+		     aria-valuenow="{{ (stats['Completed'] / total * 100) | round(2) }}" aria-valuemin="0"
+		     aria-valuemax="100">
 			{{ (stats['Completed'] / total * 100) | round(2) }}%
 		</div>
 	</div>
