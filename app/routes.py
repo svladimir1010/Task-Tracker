@@ -66,7 +66,8 @@ def add_task():
         title = request.form['title']
         description = request.form.get('description')
         category = request.form.get('category', 'General')
-        task = Task(title=title, description=description, category=category, user_id=current_user.id)
+        status = request.form.get('status')
+        task = Task(title=title, description=description, category=category, status=status, user_id=current_user.id)
         db.session.add(task)
         db.session.commit()
         return redirect(url_for('main.index'))
