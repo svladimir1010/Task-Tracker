@@ -46,13 +46,17 @@ def logout():
 def index():
     status_filter = request.args.get('status')
     category_filter = request.args.get('category')
+    sort_by = request.args.get('sort_by', 'id')
     query = Task.query.filter_by(user_id=current_user.id)
     if status_filter:
         query = query.filter_by(status=status_filter)
     if category_filter:
         query = query.filter_by(category=category_filter)
-    tasks = query.all()
-    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter)
+    if sort_by == 'created_at':
+        tasks = query.order_by(Task.created_at.desc()).all()
+    else:
+        tasks = query.order_by(Task.id).all()
+    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter, sort_by=sort_by)
 
 
 @bp.route('/add', methods=['GET', 'POST'])
