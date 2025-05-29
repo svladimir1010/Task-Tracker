@@ -1,32 +1,97 @@
+{# Расширяем базовый шаблон — наследуем разметку и стили из base.html #}
 {% extends "base.html" %}
-{% block title %}Edit Task{%endblock%}
-{% block content %}
-<h1 class="mt-4">Edit Task</h1>
-<form method="POST" class="mt-3">
-	<div class="mb-3">
-		<label class="form-label">Title:</label>
-		<input type="text" name="title" class="form-control" value="{{ task.title }}" required>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Description:</label>
-		<textarea name="description" class="form-control">{{ task.description }}</textarea>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Category:</label>
-		<input type="text" name="category" class="form-control" value="{{ task.category }}">
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Status:</label>
-		<select name="status" class="form-select">
-			<option value="Not Started" {% if task.status=="Not Started" %}selected{% endif %}>Not Started</option>
-			<option value="In Progress" {% if task.status=="In Progress" %}selected{% endif %}>In Progress</option>
-			<option value="Completed" {% if task.status=="Completed" %}selected{% endif %}>Completed</option>
-		</select>
-	</div>
-	<button type="submit" class="btn btn-success">Update Task</button>
-</form>
-<a href="{{ url_for('main.index') }}" class="btn btn-secondary mt-3">
-	 <i class="bi bi-box-arrow-left"></i> Back to Tasks
-</a>
-{% endblock %}
 
+{# Блок заголовка страницы во вкладке браузера #}
+{% block title %}Edit Task{% endblock %}
+
+{# Блок основного содержимого страницы #}
+{% block content %}
+
+<h1 class="mt-4">Edit Task</h1>
+
+{# Отображение flash-сообщений (например, "Задача обновлена успешно" или ошибки) #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+{# Форма редактирования задачи. Используется метод POST для отправки данных #}
+<form method="POST" class="mt-3" id="task-form">
+
+    {# CSRF-защита: скрытые поля, включая токен безопасности #}
+    {{ form.hidden_tag() }}
+
+    {# Поле заголовка задачи #}
+    <div class="mb-3">
+        {{ form.title.label(class="form-label") }}  {# Метка поля #}
+        {{ form.title(class="form-control", id="title") }}  {# Поле ввода #}
+
+        {# Отображение ошибок, если поле заполнено некорректно #}
+        {% if form.title.errors %}
+            <div class="text-danger">
+                {% for error in form.title.errors %}
+                    <span>{{ error }}</span><br>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# Поле описания задачи #}
+    <div class="mb-3">
+        {{ form.description.label(class="form-label") }}
+        {{ form.description(class="form-control", id="description") }}
+
+        {# Ошибки для поля описания #}
+        {% if form.description.errors %}
+            <div class="text-danger">
+                {% for error in form.description.errors %}
+                    <span>{{ error }}</span><br>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# Поле статуса задачи (например, "В процессе", "Завершено") #}
+    <div class="mb-3">
+        {{ form.status.label(class="form-label") }}
+        {{ form.status(class="form-control", id="status") }}
+
+        {# Ошибки для поля статуса #}
+        {% if form.status.errors %}
+            <div class="text-danger">
+                {% for error in form.status.errors %}
+                    <span>{{ error }}</span><br>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# Поле категории задачи (например, "Работа", "Учёба") #}
+    <div class="mb-3">
+        {{ form.category.label(class="form-label") }}
+        {{ form.category(class="form-control", id="category") }}
+
+        {# Ошибки для поля категории #}
+        {% if form.category.errors %}
+            <div class="text-danger">
+                {% for error in form.category.errors %}
+                    <span>{{ error }}</span><br>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# Кнопка "Сохранить" — отправляет форму #}
+    {{ form.submit(class="btn btn-success") }}
+</form>
+
+{# Кнопка возврата на главную страницу (список задач) #}
+<a href="{{ url_for('main.index') }}" class="btn btn-secondary mt-3">
+	<i class="bi bi-box-arrow-left"></i>
+	Back to Tasks
+</a>
+
+{% endblock %}
