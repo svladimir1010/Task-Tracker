@@ -20,6 +20,7 @@ Task Tracker — веб-приложение для управления зад�
 - Поддержка нескольких категорий задач.
 - Возможность просмотра задач по статусу (активные, завершенные).
 - Возможность сортировки задач по дате создания.
+- Возможность смены темы интерфейса (светлая/темная).
 
 
 ## Технологии
@@ -35,9 +36,10 @@ Task Tracker — веб-приложение для управления зад�
 [https://protocol777.pythonanywhere.com](https://protocol777.pythonanywhere.com)
 
 ## Скриншоты
-![Register Page](screenshots/register.png)
-![Login Page](screenshots/login.png)
-![Main Page](screenshots/main.png)
-![Add Page](screenshots/add.png)
-![Edit Page](screenshots/edit.png)
-![Stats Page](screenshots/stats.png)
+![Register dark Page](screenshots/register_dark.png)
+![Login light Page](screenshots/login_light.png)
+![Main dark Page](screenshots/main_dark.png)
+![Main light Page](screenshots/main_light.png)
+![Add light Page](screenshots/add_light.png)
+![Edit dark Page](screenshots/edit_dark.png)
+![Stats dark Page](screenshots/stats_dark.png)
