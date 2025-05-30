@@ -2,118 +2,120 @@
 {% block title %}Task Tracker{% endblock %}
 {% block content %}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-<!--    <h1 class="mb-3 mb-md-0">Task Tracker</h1>-->
-    <a href="{{ url_for('main.add_task') }}" class="btn btn-primary mt-2 mt-md-0 d-flex align-items-center">
-        <i class="bi bi-plus-circle me-1"></i> Add New Task
-    </a>
+	<a href="{{ url_for('main.add_task') }}" class="btn btn-primary mt-2 mt-md-0 d-flex align-items-center">
+		<i class="bi bi-plus-circle me-1"></i> Add New Task
+	</a>
 </div>
 
 <!-- Панель фильтров -->
 <div class="bg-white rounded-3 p-3 shadow-sm mb-4 compact-form">
-    <form method="GET" id="filterForm">
-        <div class="row g-3 align-items-end">
-            <!-- Фильтр по статусу -->
-            <div class="col-12 col-md-4">
-                <label class="form-label fw-medium">Status</label>
-                <select name="status" class="form-select" onchange="document.getElementById('filterForm').submit()">
-                    <option value="">All Statuses</option>
-                    <option value="Not Started" {% if status_filter=='Not Started' %}selected{% endif %}>Not Started</option>
-                    <option value="In Progress" {% if status_filter=='In Progress' %}selected{% endif %}>In Progress</option>
-                    <option value="Completed" {% if status_filter=='Completed' %}selected{% endif %}>Completed</option>
-                </select>
-            </div>
+	<form method="GET" id="filterForm">
+		<div class="row g-3 align-items-end">
+			<!-- Фильтр по статусу -->
+			<div class="col-12 col-md-4">
+				<label class="form-label fw-medium">Status</label>
+				<select name="status" class="form-select" onchange="document.getElementById('filterForm').submit()">
+					<option value="">All Statuses</option>
+					<option value="Not Started" {% if status_filter=='Not Started
+					' %}selected{% endif %}>Not Started</option>
+					<option value="In Progress" {% if status_filter=='In Progress
+					' %}selected{% endif %}>In Progress</option>
+					<option value="Completed" {% if status_filter=='Completed' %}selected{% endif %}>Completed</option>
+				</select>
+			</div>
 
-            <!-- Фильтр по категории -->
-            <div class="col-12 col-md-4">
-                <label class="form-label fw-medium">Category</label>
-                <input type="text" name="category" class="form-control" placeholder="Enter category"
-                       value="{{ category_filter or '' }}">
-            </div>
+			<!-- Фильтр по категории -->
+			<div class="col-12 col-md-4">
+				<label class="form-label fw-medium">Category</label>
+				<input type="text" name="category" class="form-control" placeholder="Enter category"
+				       value="{{ category_filter or '' }}">
+			</div>
 
-            <!-- Сортировка -->
-            <div class="col-12 col-md-3">
-                <label class="form-label fw-medium">Sort by</label>
-                <select name="sort_by" class="form-select" onchange="document.getElementById('filterForm').submit()">
-                    <option value="id" {% if sort_by=='id' %}selected{% endif %}>Default</option>
-                    <option value="created_at" {% if sort_by=='created_at' %}selected{% endif %}>Date Created</option>
-                </select>
-            </div>
+			<!-- Сортировка -->
+			<div class="col-12 col-md-3">
+				<label class="form-label fw-medium">Sort by</label>
+				<select name="sort_by" class="form-select" onchange="document.getElementById('filterForm').submit()">
+					<option value="id" {% if sort_by=='id' %}selected{% endif %}>Default</option>
+					<option value="created_at" {% if sort_by=='created_at' %}selected{% endif %}>Date Created</option>
+				</select>
+			</div>
 
-            <!-- Кнопка применения фильтров -->
-            <div class="col-12 col-md-1 d-flex">
-                <button type="submit" class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center">
-                    <i class="bi bi-funnel"></i>
-                </button>
-            </div>
-        </div>
-    </form>
+			<!-- Кнопка применения фильтров -->
+			<div class="col-12 col-md-1 d-flex">
+				<button type="submit"
+				        class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center">
+					<i class="bi bi-funnel"></i>
+				</button>
+			</div>
+		</div>
+	</form>
 </div>
 
 <!-- Список задач -->
 <div class="row g-3">
-    {% for task in tasks %}
-    <div class="col-12">
-        <div class="card h-100 task-card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <!-- Заголовок и информация -->
-                    <div class="flex-grow-1">
-                        <div class="d-flex flex-column mb-2">
-                            <h5 class="task-title mb-1">{{ task.title }}</h5>
-                            <div class="task-category">{{ task.category }}</div>
-                        </div>
+	{% for task in tasks %}
+	<div class="col-12">
+		<div class="card h-100 task-card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-start">
+					<!-- Заголовок и информация -->
+					<div class="flex-grow-1">
+						<div class="d-flex flex-column mb-2">
+							<h5 class="task-title mb-1">{{ task.title }}</h5>
+							<div class="task-category">{{ task.category }}</div>
+						</div>
 
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- Статус задачи -->
-                            <span class="badge status-badge
+						<div class="d-flex align-items-center gap-2">
+							<!-- Статус задачи -->
+							<span class="badge status-badge
                                 {% if task.status == 'Not Started' %}bg-light text-danger border border-danger
                                 {% elif task.status == 'In Progress' %}bg-light text-warning border border-warning
                                 {% else %}bg-light text-success border border-success{% endif %}">
                                 {{ task.status }}
                             </span>
 
-                            <!-- Дата создания -->
-                            <span class="task-date text-muted">
+							<!-- Дата создания -->
+							<span class="task-date text-muted">
                                 <i class="bi bi-calendar me-1"></i>{{ task.created_at.strftime('%d %b %Y') }}
                             </span>
-                        </div>
+						</div>
 
-                        <!-- Описание задачи -->
-                        {% if task.description %}
-                        <p class="task-description mt-2 mb-0">{{ task.description }}</p>
-                        {% endif %}
-                    </div>
+						<!-- Описание задачи -->
+						{% if task.description %}
+						<p class="task-description mt-2 mb-0">{{ task.description }}</p>
+						{% endif %}
+					</div>
 
-                    <!-- Кнопки действий -->
-                    <div class="d-flex gap-2 ms-3">
-                        <!-- Кнопка редактирования -->
-                        <a href="{{ url_for('main.edit_task', id=task.id) }}"
-                           class="btn btn-sm btn-outline-warning d-flex align-items-center">
-                            <i class="bi bi-pencil"></i>
-                        </a>
+					<!-- Кнопки действий -->
+					<div class="d-flex gap-2 ms-3">
+						<!-- Кнопка редактирования -->
+						<a href="{{ url_for('main.edit_task', id=task.id) }}"
+						   class="btn btn-sm btn-outline-warning d-flex align-items-center">
+							<i class="bi bi-pencil"></i>
+						</a>
 
-                        <!-- Кнопка удаления -->
-                        <form action="{{ url_for('main.delete_task', id=task.id) }}" method="POST" class="d-inline">
-                            <button type="submit"
-                                    class="btn btn-sm btn-outline-danger d-flex align-items-center"
-                                    onclick="return confirm('Are you sure you want to delete this task?')">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% else %}
-    <!-- Сообщение при отсутствии задач -->
-    <div class="col-12">
-        <div class="alert alert-info text-center py-4">
-            <i class="bi bi-inbox fs-2 mb-3"></i>
-            <h4 class="mb-2">No tasks found</h4>
-            <p class="mb-0">Create your first task using the "Add New Task" button</p>
-        </div>
-    </div>
-    {% endfor %}
+						<!-- Кнопка удаления -->
+						<form action="{{ url_for('main.delete_task', id=task.id) }}" method="POST" class="d-inline">
+							<button type="submit"
+							        class="btn btn-sm btn-outline-danger d-flex align-items-center"
+							        onclick="return confirm('Are you sure you want to delete this task?')">
+								<i class="bi bi-trash"></i>
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% else %}
+	<!-- Сообщение при отсутствии задач -->
+	<div class="col-12">
+		<div class="alert alert-info text-center py-4">
+			<i class="bi bi-inbox fs-2 mb-3"></i>
+			<h4 class="mb-2">No tasks found</h4>
+			<p class="mb-0">Create your first task using the "Add New Task" button</p>
+		</div>
+	</div>
+	{% endfor %}
 </div>
 {% endblock %}

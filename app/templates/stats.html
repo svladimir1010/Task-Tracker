@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Add Task{%endblock%}
 {% block content %}
- <h2 class="h3 text-center fw-normal text-secondary">Statistics</h2>
+<h2 class="h3 text-center fw-normal text-secondary mb-4">Statistics</h2>
 {% set total = stats['Not Started'] + stats['In Progress'] + stats['Completed'] %}
 {% if total > 0 %}
 <div class="mb-3">

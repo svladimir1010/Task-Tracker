@@ -7,8 +7,7 @@
 	<div class="col-12 col-md-8 col-lg-6">
 		<div class="card border-0 shadow-sm rounded-3 overflow-hidden">
 			<div class="card-body p-4 p-md-5">
-				<!--                <h2 class="mb-4 text-center fw-bold">Edit Task</h2>-->
-				<h2 class="h3 text-center fw-normal text-secondary">Edit Task</h2>
+				<h3 class=" text-center fw-normal text-secondary mb-4">Edit Task</h3>
 				{% with messages = get_flashed_messages(with_categories=true) %}
 				{% if messages %}
 				{% for category, message in messages %}
@@ -44,7 +43,7 @@
 							<i class="bi bi-text-paragraph me-1"></i> Description
 						</label>
 						{{ form.description(class="form-control form-control-lg py-2 py-md-3", id="description",
-						placeholder="Enter task description", rows="4") }}
+						placeholder="Enter task description", rows="2") }}
 						{% if form.description.errors %}
 						<div class="text-danger small mt-1">
 							{% for error in form.description.errors %}

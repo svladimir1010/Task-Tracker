@@ -1,77 +1,80 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Регистрация
+Регистрация
 {% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-12 col-md-8 col-lg-6">
-        <!-- Заголовок -->
-        <div class="text-center mb-4">
-<!--            <h1 class="mb-1">Task Tracker</h1>-->
-            <h2 class="h4 text-muted fw-normal">Регистрация</h2>
-        </div>
+	<div class="col-12 col-md-8 col-lg-6">
+		<!--        &lt;!&ndash; Заголовок &ndash;&gt;-->
+		<!--        <div class="text-center mb-4">-->
+		<!--&lt;!&ndash;            <h1 class="mb-1">Task Tracker</h1>&ndash;&gt;-->
+		<!--            <h2 class="h4 text-muted fw-normal">Регистрация</h2>-->
+		<!--        </div>-->
 
-        <!-- Форма регистрации -->
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4 p-lg-5">
-                {# Отображение флеш-сообщений #}
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show mb-4">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+		<!-- Форма регистрации -->
+		<div class="card border-0 shadow-sm">
+			<div class="card-body p-4 p-lg-5">
+				{# Отображение флеш-сообщений #}
+				{% with messages = get_flashed_messages(with_categories=true) %}
+				{% if messages %}
+				{% for category, message in messages %}
+				<div class="alert alert-{{ category }} alert-dismissible fade show mb-4">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+				{% endfor %}
+				{% endif %}
+				{% endwith %}
 
-                <form method="post">
-                    {{ form.hidden_tag() }}
+				<form method="post">
+					<h2 class="h4 text-muted text-center fw-normal mb-4">Регистрация</h2>
+					{{ form.hidden_tag() }}
+					<!-- Поле Username -->
+					<div class="mb-4">
+						{{ form.username.label(class="form-label fw-medium mb-2") }}
+						{{ form.username(class="form-control form-control-lg py-2", id="username", placeholder="Введите
+						имя пользователя") }}
+						{% for error in form.username.errors %}
+						<div class="text-danger small mt-1">{{ error }}</div>
+						{% endfor %}
+					</div>
 
-                    <!-- Поле Username -->
-                    <div class="mb-4">
-                        {{ form.username.label(class="form-label fw-medium mb-2") }}
-                        {{ form.username(class="form-control form-control-lg py-2", id="username", placeholder="Введите имя пользователя") }}
-                        {% for error in form.username.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+					<!-- Поле Email -->
+					<div class="mb-4">
+						{{ form.email.label(class="form-label fw-medium mb-2") }}
+						{{ form.email(class="form-control form-control-lg py-2", id="email", placeholder="Введите ваш
+						email") }}
+						{% for error in form.email.errors %}
+						<div class="text-danger small mt-1">{{ error }}</div>
+						{% endfor %}
+					</div>
 
-                    <!-- Поле Email -->
-                    <div class="mb-4">
-                        {{ form.email.label(class="form-label fw-medium mb-2") }}
-                        {{ form.email(class="form-control form-control-lg py-2", id="email", placeholder="Введите ваш email") }}
-                        {% for error in form.email.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+					<!-- Поле Password -->
+					<div class="mb-4">
+						{{ form.password.label(class="form-label fw-medium mb-2") }}
+						{{ form.password(class="form-control form-control-lg py-2", id="password", placeholder="Введите
+						пароль") }}
+						{% for error in form.password.errors %}
+						<div class="text-danger small mt-1">{{ error }}</div>
+						{% endfor %}
+					</div>
 
-                    <!-- Поле Password -->
-                    <div class="mb-4">
-                        {{ form.password.label(class="form-label fw-medium mb-2") }}
-                        {{ form.password(class="form-control form-control-lg py-2", id="password", placeholder="Введите пароль") }}
-                        {% for error in form.password.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+					<!-- Кнопка регистрации -->
+					<div class="d-grid mb-3">
+						{{ form.submit(class="btn btn-success btn-lg py-2 fw-medium") }}
+					</div>
 
-                    <!-- Кнопка регистрации -->
-                    <div class="d-grid mb-3">
-                        {{ form.submit(class="btn btn-success btn-lg py-2 fw-medium") }}
-                    </div>
-
-                    <!-- Ссылка для входа -->
-                    <div class="text-center mt-4 pt-2 border-top">
-                        <a href="{{ url_for('main.login') }}" class="btn btn-link text-decoration-none">
-                            Вернуться к входу
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+					<!-- Ссылка для входа -->
+					<div class="text-center mt-4 pt-2 border-top">
+						<a href="{{ url_for('main.login') }}" class="btn btn-link text-decoration-none">
+							Вернуться к входу
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}
