@@ -4,64 +4,65 @@
 
 {% block content %}
 <div class="row justify-content-center py-5">
-	<div class="col-12 col-md-8 col-lg-6">
+    <div class="col-12 col-md-8 col-lg-6">
 
-		<!-- Форма входа -->
-		<div class="card border-0 shadow-sm rounded-3 overflow-hidden">
-			<div class="card-body p-4 p-md-5">
+       {# ИЗМЕНЕНО: Добавлен класс bg-body-secondary для контраста фона карточки #}
+       <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-body-secondary">
+          <div class="card-body p-4 p-md-5">
 
-				<form method="POST" id="login-form">
-					<h2 class="h4 text-muted text-center fw-normal mb-4">Login</h2>
-					{{ form.hidden_tag() }}
+             <form method="POST" id="login-form">
+                {# text-muted для заголовка Login уже адаптивен #}
+                <h2 class="h4 text-center fw-normal mb-4">Login</h2>
+                {{ form.hidden_tag() }}
 
-					<!-- Поле Username -->
-					<div class="mb-4">
-						<label for="username" class="form-label fw-medium mb-2 text-dark">
-							<i class="bi bi-person me-1"></i> Username
-						</label>
-						{{ form.username(class="form-control form-control-lg py-3", id="username", placeholder="Enter
-						your username") }}
-						{% if form.username.errors %}
-						<div class="text-danger small mt-1">
-							{% for error in form.username.errors %}
-							<span>{{ error }}</span>
-							{% endfor %}
-						</div>
-						{% endif %}
-					</div>
+                <div class="mb-4">
+                   {# ИЗМЕНЕНО: Удален класс text-dark, чтобы метка адаптировалась под тему #}
+                   <label for="username" class="form-label fw-medium mb-2">
+                      <i class="bi bi-person me-1"></i> Username
+                   </label>
+                   {{ form.username(class="form-control form-control-lg py-3", id="username", placeholder="Enter
+                   your username") }}
+                   {% if form.username.errors %}
+                   <div class="text-danger small mt-1">
+                      {% for error in form.username.errors %}
+                      <span>{{ error }}</span>
+                      {% endfor %}
+                   </div>
+                   {% endif %}
+                </div>
 
-					<!-- Поле Password -->
-					<div class="mb-4">
-						<label for="password" class="form-label fw-medium mb-2 text-dark">
-							<i class="bi bi-lock me-1"></i> Password
-						</label>
-						{{ form.password(class="form-control form-control-lg py-3", id="password", placeholder="Enter
-						your password") }}
-						{% if form.password.errors %}
-						<div class="text-danger small mt-1">
-							{% for error in form.password.errors %}
-							<span>{{ error }}</span>
-							{% endfor %}
-						</div>
-						{% endif %}
-					</div>
+                <div class="mb-4">
+                   {# ИЗМЕНЕНО: Удален класс text-dark, чтобы метка адаптировалась под тему #}
+                   <label for="password" class="form-label fw-medium mb-2">
+                      <i class="bi bi-lock me-1"></i> Password
+                   </label>
+                   {{ form.password(class="form-control form-control-lg py-3", id="password", placeholder="Enter
+                   your password") }}
+                   {% if form.password.errors %}
+                   <div class="text-danger small mt-1">
+                      {% for error in form.password.errors %}
+                      <span>{{ error }}</span>
+                      {% endfor %}
+                   </div>
+                   {% endif %}
+                </div>
 
-					<!-- Кнопка входа -->
-					<div class="d-grid mb-4">
-						<button type="submit" class="btn btn-success btn-lg py-3 fw-bold">
-							<i class="bi bi-box-arrow-in-right me-2"></i>Login
-						</button>
-					</div>
+                <div class="d-grid mb-4">
+                   {# Классы btn-success и btn-lg уже адаптивны для кнопок #}
+                   <button type="submit" class="btn btn-success btn-lg py-3 fw-bold">
+                      <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                   </button>
+                </div>
 
-					<!-- Ссылка на регистрацию -->
-					<div class="text-center pt-3 border-top">
-						<a href="{{ url_for('main.register') }}" class="btn btn-link text-decoration-none px-0">
-							<i class="bi bi-arrow-left me-1"></i> Back to Register
-						</a>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+                <div class="text-center pt-3 border-top">
+                   {# Класс btn-link и text-decoration-none уже адаптивны для ссылок #}
+                   <a href="{{ url_for('main.register') }}" class="btn btn-link text-decoration-none px-0">
+                      <i class="bi bi-arrow-left me-1"></i> Back to Register
+                   </a>
+                </div>
+             </form>
+          </div>
+       </div>
+    </div>
 </div>
 {% endblock %}

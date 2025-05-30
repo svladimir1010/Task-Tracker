@@ -7,9 +7,9 @@
 	<div class="col-12 col-md-8 col-lg-6">
 
 		<!-- Форма добавления задачи -->
-		<div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+		<div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-body-secondary">
 			<div class="card-body p-4 p-md-5">
-				<h2 class="h3 text-center fw-normal text-secondary mb-4">Add New Task</h2>
+				<h2 class="h3 text-center fw-normal mb-4">Add New Task</h2>
 				{# Отображение flash-сообщений #}
 				{% with messages = get_flashed_messages(with_categories=true) %}
 				{% if messages %}
@@ -26,7 +26,7 @@
 
 					<!-- Поле Title -->
 					<div class="mb-4">
-						<label for="title" class="form-label fw-medium mb-2 text-dark">
+						<label for="title" class="form-label fw-medium mb-2 ">
 							<i class="bi bi-card-heading me-1"></i> Title
 						</label>
 						{{ form.title(class="form-control form-control-lg py-3", id="title", placeholder="Enter task
@@ -42,7 +42,7 @@
 
 					<!-- Поле Description -->
 					<div class="mb-4">
-						<label for="description" class="form-label fw-medium mb-2 text-dark">
+						<label for="description" class="form-label fw-medium mb-2 ">
 							<i class="bi bi-text-paragraph me-1"></i> Description
 						</label>
 						{{ form.description(class="form-control form-control-lg py-3", id="description",
@@ -58,7 +58,7 @@
 
 					<!-- Поле Status -->
 					<div class="mb-4">
-						<label for="status" class="form-label fw-medium mb-2 text-dark">
+						<label for="status" class="form-label fw-medium mb-2 ">
 							<i class="bi bi-list-check me-1"></i> Status
 						</label>
 						{{ form.status(class="form-select form-select-lg py-3", id="status") }}
@@ -73,7 +73,7 @@
 
 					<!-- Поле Category -->
 					<div class="mb-4">
-						<label for="category" class="form-label fw-medium mb-2 text-dark">
+						<label for="category" class="form-label fw-medium mb-2 ">
 							<i class="bi bi-tag me-1"></i> Category
 						</label>
 						{{ form.category(class="form-control form-control-lg py-3", id="category", placeholder="Enter
