@@ -4,6 +4,10 @@ from app import db, bcrypt         # импорт базы данных и bcryp
 from app.models import Task, User  # модели пользователя и задачи
 from app.forms import RegisterForm, LoginForm, TaskForm  # формы регистрации, логина и задач
 
+from datetime import datetime
+
+
+
 # Создание Blueprint для группировки маршрутов и удобства
 bp = Blueprint('main', __name__)
 
@@ -31,7 +35,7 @@ def index():
         tasks = query.order_by(Task.id).all()
 
     # Отправляем данные в шаблон
-    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter, sort_by=sort_by)
+    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter, sort_by=sort_by, now=datetime.now())
 
 
 # Страница регистрации нового пользователя
@@ -60,7 +64,7 @@ def register():
         flash('Registration successful! Please log in.', 'success')
 
         return redirect(url_for('main.login'))  # перенаправление на страницу логина
-    return render_template('register.html', form=form)  # Если GET-запрос или ошибки валидации — показать форму
+    return render_template('register.html', form=form, now=datetime.now())  # Если GET-запрос или ошибки валидации — показать форму
 
 
 # Страница входа пользователя
@@ -76,7 +80,7 @@ def login():
             return redirect(url_for('main.index'))
 
         flash('Invalid username or password', 'danger')  # сообщение об ошибке
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, now=datetime.now())
 
 
 # Выход из аккаунта
@@ -106,7 +110,7 @@ def add_task():
         db.session.commit()
         flash('Task added successfully!', 'success')
         return redirect(url_for('main.index'))
-    return render_template('add_task.html', form=form)
+    return render_template('add_task.html', form=form, now=datetime.now())
 
 
 # Редактирование существующей задачи
@@ -134,7 +138,7 @@ def edit_task(id):
         form.category.data = task.category
         form.status.data = task.status
 
-    return render_template('edit_task.html', form=form, task=task)
+    return render_template('edit_task.html', form=form, task=task, now=datetime.now())
 
 
 # Удаление задачи
@@ -161,5 +165,5 @@ def stats():
         'Completed': len([t for t in tasks if t.status == 'Completed'])
     }
     # Отправляем данные в шаблон
-    return render_template('stats.html', stats=stats)
+    return render_template('stats.html', stats=stats, now=datetime.now())
 

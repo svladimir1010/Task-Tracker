@@ -5,4 +5,5 @@ __pycache__/
 instruction.txt
 *.db
 test.html
+test.py
 .env
