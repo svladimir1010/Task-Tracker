@@ -1,24 +1,25 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, current_user, login_required
-from app import db, bcrypt         # импорт базы данных и bcrypt для хеширования паролей
+from app import db, bcrypt  # импорт базы данных и bcrypt для хеширования паролей
 from app.models import Task, User  # модели пользователя и задачи
 from app.forms import RegisterForm, LoginForm, TaskForm  # формы регистрации, логина и задач
+from app.email.sender import send_confirmation_email
+from app.email.tokens import confirm_token
 
 from datetime import datetime
-
-
 
 # Создание Blueprint для группировки маршрутов и удобства
 bp = Blueprint('main', __name__)
 
+
 # Главная страница, отображает список задач
 @bp.route('/')
-@login_required    # доступ только для авторизованных пользователей
+@login_required  # доступ только для авторизованных пользователей
 def index():
     # Получение параметров фильтрации и сортировки из URL
     status_filter = request.args.get('status')
     category_filter = request.args.get('category')
-    sort_by = request.args.get('sort_by', 'id')      # По умолчанию сортировка по ID
+    sort_by = request.args.get('sort_by', 'id')  # По умолчанию сортировка по ID
 
     # Формируем запрос на выборку задач, принадлежащих текущему пользователю
     query = Task.query.filter_by(user_id=current_user.id)
@@ -35,7 +36,8 @@ def index():
         tasks = query.order_by(Task.id).all()
 
     # Отправляем данные в шаблон
-    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter, sort_by=sort_by, now=datetime.now())
+    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter,
+                           sort_by=sort_by, now=datetime.now())
 
 
 # Страница регистрации нового пользователя
@@ -57,14 +59,50 @@ def register():
         user = User(
             username=form.username.data,
             email=form.email.data,
-            password=hashed_password
+            password=hashed_password,
+            confirmed=False  # <-- новое поле (см. ниже)
         )
         db.session.add(user)
         db.session.commit()
         flash('Registration successful! Please log in.', 'success')
 
+        # Отправляем письмо
+        # send_confirmation_email(user)
+        # flash('Registration successful! Check your email to confirm.', 'info')
+
         return redirect(url_for('main.login'))  # перенаправление на страницу логина
-    return render_template('register.html', form=form, now=datetime.now())  # Если GET-запрос или ошибки валидации — показать форму
+    return render_template('register.html', form=form,
+                           now=datetime.now())  # Если GET-запрос или ошибки валидации — показать форму
+
+
+@bp.route('/confirm/<token>')
+def confirm_email(token):
+    # ⛓️ Декодируем токен и извлекаем email
+    email = confirm_token(token)
+
+    # 🛑 Если токен недействителен или просрочен — сообщаем пользователю
+    if not email:
+        flash('Ссылка недействительна или устарела.', 'danger')
+        return redirect(url_for('main.login'))
+
+    # 🔍 Ищем пользователя с этим email
+    user = User.query.filter_by(email=email).first_or_404()
+
+    # ✅ Если уже подтверждён — просто сообщаем
+    if user.confirmed:
+        flash('Аккаунт уже подтверждён.', 'info')
+    else:
+        # 📌 Устанавливаем флаг подтверждения и сохраняем в БД
+        user.confirmed = True
+        db.session.commit()
+        flash('Email подтверждён! Теперь можешь войти.', 'success')
+
+    # 🔁 Перенаправляем на страницу входа
+    return redirect(url_for('main.login'))
+
+# 💡 Важно: в этой учебной версии подтверждение может быть отключено на этапе логина.
+# Этот маршрут остаётся доступным для демонстрации, но на проде потребуется реальная проверка.
+
 
 
 # Страница входа пользователя
@@ -76,6 +114,12 @@ def login():
 
         # Проверка пароля
         if user and bcrypt.check_password_hash(user.password, form.password.data):
+
+            # ⛔ Проверка подтверждения email временно отключена (учебный режим / dev-режим)
+            # if not user.confirmed:
+            #     flash('Пожалуйста, подтвердите свою почту перед входом.', 'warning')
+            #     return redirect(url_for('main.login'))
+
             login_user(user)  # логиним пользователя
             return redirect(url_for('main.index'))
 
@@ -166,4 +210,3 @@ def stats():
     }
     # Отправляем данные в шаблон
     return render_template('stats.html', stats=stats, now=datetime.now())
-

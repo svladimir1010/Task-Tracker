@@ -5,6 +5,9 @@ from flask_login import LoginManager    # Управление сессиями 
 from flask_bcrypt import Bcrypt         # Хэширование паролей
 import os
 from dotenv import load_dotenv          # Загрузка переменных окружения из .env
+from flask_mail import Mail
+from config import Config
+
 
 # Загружаем переменные окружения из файла .env
 load_dotenv()
@@ -13,6 +16,7 @@ load_dotenv()
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
+mail = Mail()  # Инициализация Flask-Mail для отправки писем
 
 
 def create_app():
@@ -22,17 +26,20 @@ def create_app():
     """
     app = Flask(__name__)
 
-    # Конфигурация ключа безопасности (используется для сессий и CSRF)
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-only-key')
+    # # Конфигурация ключа безопасности (используется для сессий и CSRF)
+    # app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-only-key')
+    # # Конфигурация подключения к базе данных (используется SQLite)
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
 
-    # Конфигурация подключения к базе данных (используется SQLite)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
+    app.config.from_object(Config)
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Отключаем предупреждение
 
     # Инициализация расширений с привязкой к текущему приложению
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
+    mail.init_app(app)  # Инициализация Flask-Mail
 
     # Указываем, куда перенаправлять неавторизованных пользователей
     login_manager.login_view = 'main.login'
@@ -52,5 +59,7 @@ def create_app():
     # Создание таблиц в базе данных, если их ещё нет
     with app.app_context():
         db.create_all()
+
+    print("MAIL:", mail)
 
     return app

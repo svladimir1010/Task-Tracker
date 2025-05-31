@@ -2,6 +2,7 @@
 from flask_login import UserMixin
 # Импорт объекта базы данных из твоего приложения (SQLAlchemy)
 from app import db
+from app.email.tokens import generate_confirmation_token
 
 
 class User(UserMixin, db.Model):
@@ -19,6 +20,11 @@ class User(UserMixin, db.Model):
     # Связь один-ко-многим: один пользователь → много задач
     # backref='user' создаёт у задачи ссылку на пользователя (`task.user`)
     # lazy=True означает, что задачи будут загружаться при обращении, а не сразу
+
+    # Новое поле для подтверждения email
+    confirmed = db.Column(db.Boolean, default=True) # По умолчанию пользователь считается подтверждённым
+    def get_confirmation_token(self):
+        return generate_confirmation_token(self.email) # Генерация токена для подтверждения email
 
 
 class Task(db.Model):
