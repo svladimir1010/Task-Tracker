@@ -46,3 +46,4 @@ Task Tracker — веб-приложение для управления зад�
 ![Add light Page](screenshots/add_light.png)
 ![Edit dark Page](screenshots/edit_dark.png)
 ![Stats dark Page](screenshots/stats_dark.png)
+![Stats light Page](screenshots/error_404.png)
