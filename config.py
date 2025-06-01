@@ -6,6 +6,8 @@ class Config:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///tasks.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    DEBUG = False # Отключаем режим отладки по умолчанию
+
     # Flask-Mail настройки
     MAIL_SERVER = 'smtp.mailtrap.io'
     MAIL_PORT = 2525

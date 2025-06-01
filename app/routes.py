@@ -6,7 +6,6 @@ from app.forms import RegisterForm, LoginForm, TaskForm  # формы регис
 from app.email.sender import send_confirmation_email
 from app.email.tokens import confirm_token
 
-from datetime import datetime
 
 # Создание Blueprint для группировки маршрутов и удобства
 bp = Blueprint('main', __name__)
@@ -16,6 +15,7 @@ bp = Blueprint('main', __name__)
 @bp.route('/')
 @login_required  # доступ только для авторизованных пользователей
 def index():
+
     # Получение параметров фильтрации и сортировки из URL
     status_filter = request.args.get('status')
     category_filter = request.args.get('category')
@@ -36,8 +36,7 @@ def index():
         tasks = query.order_by(Task.id).all()
 
     # Отправляем данные в шаблон
-    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter,
-                           sort_by=sort_by, now=datetime.now())
+    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter, sort_by=sort_by)
 
 
 # Страница регистрации нового пользователя
@@ -71,8 +70,7 @@ def register():
         # flash('Registration successful! Check your email to confirm.', 'info')
 
         return redirect(url_for('main.login'))  # перенаправление на страницу логина
-    return render_template('register.html', form=form,
-                           now=datetime.now())  # Если GET-запрос или ошибки валидации — показать форму
+    return render_template('register.html', form=form)  # Если GET-запрос или ошибки валидации — показать форму
 
 
 @bp.route('/confirm/<token>')
@@ -124,7 +122,7 @@ def login():
             return redirect(url_for('main.index'))
 
         flash('Invalid username or password', 'danger')  # сообщение об ошибке
-    return render_template('login.html', form=form, now=datetime.now())
+    return render_template('login.html', form=form)
 
 
 # Выход из аккаунта
@@ -154,7 +152,7 @@ def add_task():
         db.session.commit()
         flash('Task added successfully!', 'success')
         return redirect(url_for('main.index'))
-    return render_template('add_task.html', form=form, now=datetime.now())
+    return render_template('add_task.html', form=form)
 
 
 # Редактирование существующей задачи
@@ -182,7 +180,7 @@ def edit_task(id):
         form.category.data = task.category
         form.status.data = task.status
 
-    return render_template('edit_task.html', form=form, task=task, now=datetime.now())
+    return render_template('edit_task.html', form=form, task=task)
 
 
 # Удаление задачи
@@ -209,4 +207,16 @@ def stats():
         'Completed': len([t for t in tasks if t.status == 'Completed'])
     }
     # Отправляем данные в шаблон
-    return render_template('stats.html', stats=stats, now=datetime.now())
+    return render_template('stats.html', stats=stats)
+
+
+
+# # Обработчик ошибки 404 (страница не найдена)
+# @bp.errorhandler(404)
+# def page_not_found(e):
+#     return render_template('404.html'), 404
+#
+# # Обработчик ошибки 500 (внутренняя ошибка сервера)
+# @bp.errorhandler(500)
+# def internal_server_error(e):
+#     return render_template('500.html'), 500

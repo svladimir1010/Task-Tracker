@@ -1,5 +1,6 @@
 # Импорт основных библиотек Flask и расширений
 from flask import Flask
+from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy  # ORM для работы с БД
 from flask_login import LoginManager    # Управление сессиями пользователей
 from flask_bcrypt import Bcrypt         # Хэширование паролей
@@ -9,10 +10,12 @@ from flask_mail import Mail
 from config import Config
 
 
+
 # Загружаем переменные окружения из файла .env
 load_dotenv()
 
 # Инициализация расширений, пока без привязки к приложению
+moment = Moment()
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
@@ -40,6 +43,7 @@ def create_app():
     bcrypt.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)  # Инициализация Flask-Mail
+    moment.init_app(app)  # Инициализация Flask-Moment
 
     # Указываем, куда перенаправлять неавторизованных пользователей
     login_manager.login_view = 'main.login'
@@ -60,6 +64,12 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    print("MAIL:", mail)
+
+    from app import errors  # Импорт обработчиков ошибок приложения
+    # Регистрация глобальных обработчиков ошибок
+    app.register_error_handler(404, errors.page_not_found)
+    app.register_error_handler(500, errors.internal_server_error)
 
     return app
+
+
