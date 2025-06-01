@@ -41,8 +41,9 @@ Task Tracker — веб-приложение для управления зад�
 ## Скриншоты
 ![Register dark Page](screenshots/register_dark.png)
 ![Login light Page](screenshots/login_light.png)
-![Main dark Page](screenshots/main_dark.png)
-![Main light Page](screenshots/main_light.png)
+![Main Page](screenshots/main.png)
+![Main mobile Page](screenshots/main_mobile.png)
+![Main mobile_1 Page](screenshots/main_mobile_1.png)
 ![Add light Page](screenshots/add_light.png)
 ![Edit dark Page](screenshots/edit_dark.png)
 ![Stats dark Page](screenshots/stats_dark.png)
