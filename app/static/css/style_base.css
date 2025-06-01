@@ -90,3 +90,53 @@ input[type="datetime-local"] {
 }
 
 
+/* Оптимизация мобильного меню */
+/*
+@media (max-width: 991px) {
+    #navbarContent .navbar-nav {
+        padding: 10px 0;
+    }
+    #navbarContent .nav-item {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    #navbarContent .nav-item:last-child {
+        border-bottom: none;
+    }
+    #navbarContent .btn {
+        justify-content: flex-start;
+        margin: 5px 0;
+    }
+}
+
+/* Оптимизация мобильного меню */
+/*
+@media (max-width: 991px) {
+    #navbarContent .navbar-nav {
+        padding: 10px 0;
+        width: 100%;
+    }
+    #navbarContent .nav-item {
+        margin-bottom: 8px;
+        width: 100%;
+    }
+    #navbarContent .nav-item:last-child {
+        margin-bottom: 0;
+    }
+    #navbarContent .btn,
+    #navbarContent .nav-link {
+        justify-content: flex-start;
+        padding: 10px 15px;
+        border-radius: 5px;
+    }
+    #navbarContent .btn {
+        border-width: 1px;
+    }
+}
+*\
+/* Иконка темы */
+/*
+#btn-theme-toggle {
+    transition: all 0.3s ease;
+}
+
+*\

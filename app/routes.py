@@ -5,7 +5,9 @@ from app.models import Task, User  # модели пользователя и з
 from app.forms import RegisterForm, LoginForm, TaskForm  # формы регистрации, логина и задач
 from app.email.sender import send_confirmation_email
 from app.email.tokens import confirm_token
-
+from io import StringIO
+from flask import Response
+import csv
 
 # Создание Blueprint для группировки маршрутов и удобства
 bp = Blueprint('main', __name__)
@@ -15,7 +17,6 @@ bp = Blueprint('main', __name__)
 @bp.route('/')
 @login_required  # доступ только для авторизованных пользователей
 def index():
-
     # Получение параметров фильтрации и сортировки из URL
     status_filter = request.args.get('status')
     category_filter = request.args.get('category')
@@ -36,7 +37,8 @@ def index():
         tasks = query.order_by(Task.id).all()
 
     # Отправляем данные в шаблон
-    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter, sort_by=sort_by)
+    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter,
+                           sort_by=sort_by)
 
 
 # Страница регистрации нового пользователя
@@ -98,9 +100,9 @@ def confirm_email(token):
     # 🔁 Перенаправляем на страницу входа
     return redirect(url_for('main.login'))
 
+
 # 💡 Важно: в этой учебной версии подтверждение может быть отключено на этапе логина.
 # Этот маршрут остаётся доступным для демонстрации, но на проде потребуется реальная проверка.
-
 
 
 # Страница входа пользователя
@@ -112,7 +114,6 @@ def login():
 
         # Проверка пароля
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-
             # ⛔ Проверка подтверждения email временно отключена (учебный режим / dev-режим)
             # if not user.confirmed:
             #     flash('Пожалуйста, подтвердите свою почту перед входом.', 'warning')
@@ -210,6 +211,20 @@ def stats():
     return render_template('stats.html', stats=stats)
 
 
+@bp.route('/export')
+@login_required
+def export_tasks():
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['ID', 'Title', 'Description', 'Status', 'Category', 'Created At'])
+    for task in tasks:
+        writer.writerow([
+            task.id, task.title, task.description or '', task.status, task.category or 'General',
+            task.created_at.strftime('%Y-%m-%d %H:%M')
+        ])
+    output.seek(0)
+    return Response(output, mimetype='text/csv', headers={'Content-Disposition': 'attachment;filename=tasks.csv'})
 
 # # Обработчик ошибки 404 (страница не найдена)
 # @bp.errorhandler(404)
