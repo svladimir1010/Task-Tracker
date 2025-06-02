@@ -1,17 +1,33 @@
 .task-card {
     transition: all 0.2s ease;
 }
-.task-card:hover {
+
+.task-item-card:hover {
     transform: translateY(-2px);
     /* Тень: можно использовать rgba(0,0,0,...) для темной тени, которая будет менее заметна в темной теме, */
     /* либо изменить цвет тени на более светлый для темной темы, используя переменную. */
     /* Для универсальности пока оставим как есть, но это место для возможной доработки. */
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
+
+[data-bs-theme="dark"] .card:hover {
+    box-shadow: 0 4px 8px rgba(255,255,255,0.1); /* Светлая тень для тёмной темы */
+}
+
+
+
+[data-bs-theme="dark"] input[type="datetime-local"] {
+    background-color: var(--bs-dark-bg-subtle);
+    color: var(--bs-white);
+    border-color: var(--bs-border-color);
+}
+
+
 .status-badge {
     font-size: 0.85rem;
     padding: 0.25rem 0.75rem;
 }
+
 
 .compact-form .form-label {
     font-size: 0.9rem;
@@ -23,8 +39,7 @@
 .compact-form .form-select {
     padding: 0.375rem 0.75rem;
     font-size: 0.9rem;
-    /* Поля ввода Bootstrap уже адаптивны, если только вы не переопределяете их */
-    /* Убедитесь, что нет жестких background-color или color */
+    /* Поля ввода и селекты должны быть чуть меньше, чтобы соответствовать компактному стилю */
 }
 .task-title {
     font-weight: 500;
@@ -69,7 +84,9 @@ input[type="datetime-local"] {
     display: flex; /* Для центрирования текста, если нужно */
     align-items: center;
     justify-content: center;
+    min-width: 40px; /* Чтобы текст не "прыгал" */
 }
+
 
 .bi-moon-fill {
   color: #0d6efd !important;
@@ -79,64 +96,48 @@ input[type="datetime-local"] {
   color: #ffc107 !important;
 }
 
+
 /* Для светлой темы */
-[data-bs-theme="light"] #btn-theme-toggle {
-  color: #0d6efd; /* синий */
+[data-bs-theme="light"] .theme-toggle-btn {
+    color: #0d6efd;
 }
 
 /* Для тёмной темы */
-[data-bs-theme="dark"] #btn-theme-toggle {
-  color: #ffc107; /* жёлтый */
+[data-bs-theme="dark"] .theme-toggle-btn {
+    color: #ffc107;
 }
 
 
-/* Оптимизация мобильного меню */
-/*
-@media (max-width: 991px) {
-    #navbarContent .navbar-nav {
-        padding: 10px 0;
-    }
-    #navbarContent .nav-item {
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-    }
-    #navbarContent .nav-item:last-child {
-        border-bottom: none;
-    }
-    #navbarContent .btn {
-        justify-content: flex-start;
-        margin: 5px 0;
-    }
+/* static/css/style_base.css */
+html, .navbar, .offcanvas, .footer, .alert, .table {
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Оптимизация мобильного меню */
-/*
-@media (max-width: 991px) {
-    #navbarContent .navbar-nav {
-        padding: 10px 0;
-        width: 100%;
-    }
-    #navbarContent .nav-item {
-        margin-bottom: 8px;
-        width: 100%;
-    }
-    #navbarContent .nav-item:last-child {
-        margin-bottom: 0;
-    }
-    #navbarContent .btn,
-    #navbarContent .nav-link {
-        justify-content: flex-start;
-        padding: 10px 15px;
-        border-radius: 5px;
-    }
-    #navbarContent .btn {
-        border-width: 1px;
-    }
-}
-*\
-/* Иконка темы */
-/*
-#btn-theme-toggle {
-    transition: all 0.3s ease;
+[data-bs-theme="light"] .form-control:hover,
+[data-bs-theme="light"] .form-select:hover,
+[data-bs-theme="light"] input[type="text"]:hover,
+[data-bs-theme="light"] input[type="password"]:hover,
+[data-bs-theme="light"] input[type="email"]:hover,
+[data-bs-theme="light"] input[type="search"]:hover,
+[data-bs-theme="light"] select:hover,
+[data-bs-theme="light"] textarea:hover {
+    /* Легкое изменение границы при наведении */
+    border-color: rgba(0,0,0,0.2);
+    /* Усиление тени для эффекта при наведении */
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    /* Небольшие изменения фона для интерактивности */
+    background-color: #f0f0f0;
 }
 
-*\
+[data-bs-theme="dark"] .form-control:hover,
+[data-bs-theme="dark"] .form-select:hover,
+[data-bs-theme="dark"] input[type="text"]:hover,
+[data-bs-theme="dark"] input[type="password"]:hover,
+[data-bs-theme="dark"] input[type="email"]:hover,
+[data-bs-theme="dark"] input[type="search"]:hover,
+[data-bs-theme="dark"] select:hover,
+[data-bs-theme="dark"] textarea:hover {
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 1px 4px rgba(255,255,255,0.1);
+    background-color: #2a2a2a;
+}

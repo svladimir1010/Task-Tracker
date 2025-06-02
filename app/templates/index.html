@@ -48,7 +48,7 @@
 <div class="row g-3">
     {% for task in tasks %}
     <div class="col-12 col-md-6 col-lg-4"> {# Улучшение: каждая задача занимает пол-экрана на md и треть на lg #}
-        <div class="card h-100 bg-body-tertiary border-0 shadow-sm">
+        <div class="card h-100 bg-body-secondary border-0 shadow-sm task-item-card">
             <div class="card-body p-3 d-flex flex-column"> {# d-flex flex-column для прижатия кнопок вниз #}
                 <div class="d-flex align-items-center mb-2">
                     <h5 class="task-title mb-0 me-2 text-truncate">{{ task.title }}</h5> {# text-truncate для длинных заголовков #}
