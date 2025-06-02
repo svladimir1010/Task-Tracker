@@ -7,7 +7,9 @@ from app.email.sender import send_confirmation_email
 from app.email.tokens import confirm_token
 from io import StringIO
 from flask import Response
+from datetime import datetime
 import csv
+
 
 # Создание Blueprint для группировки маршрутов и удобства
 bp = Blueprint('main', __name__)
@@ -15,30 +17,61 @@ bp = Blueprint('main', __name__)
 
 # Главная страница, отображает список задач
 @bp.route('/')
-@login_required  # доступ только для авторизованных пользователей
+@login_required
 def index():
-    # Получение параметров фильтрации и сортировки из URL
-    status_filter = request.args.get('status')
-    category_filter = request.args.get('category')
-    sort_by = request.args.get('sort_by', 'id')  # По умолчанию сортировка по ID
+    # 1. Получение параметров фильтрации и сортировки
+    status_filter = request.args.get('status', '')
+    category_filter = request.args.get('category', '')
+    sort_by = request.args.get('sort_by', 'id') # По умолчанию сортируем по id
 
-    # Формируем запрос на выборку задач, принадлежащих текущему пользователю
+    # Инициализация базового запроса для задач текущего пользователя
     query = Task.query.filter_by(user_id=current_user.id)
-    # Применяем фильтры, если они указаны
+
+    # 2. Применение фильтрации
     if status_filter:
         query = query.filter_by(status=status_filter)
+
     if category_filter:
-        query = query.filter_by(category=category_filter)
+        # Используем .ilike() для поиска подстроки без учета регистра
+        query = query.filter(Task.category.ilike(f'%{category_filter}%'))
 
-    # Сортировка: по дате создания или по ID
+    # 3. Применение сортировки
     if sort_by == 'created_at':
-        tasks = query.order_by(Task.created_at.desc()).all()
-    else:
-        tasks = query.order_by(Task.id).all()
+        query = query.order_by(Task.created_at.desc()) # Свежие задачи вверху
+    elif sort_by == 'priority':
+        # Для сортировки по приоритету нужно преобразовать строковые значения
+        # в порядок. Используем CASE-выражение для SQL.
+        # Если у вас есть Enum для Priority, то это будет проще.
+        query = query.order_by(
+            db.case(
+                (Task.priority == 'High', 1),
+                (Task.priority == 'Medium', 2),
+                (Task.priority == 'Low', 3),
+                else_=4 # Для любых других значений, если есть
+            )
+        )
+    elif sort_by == 'due_date':
+        # Сначала сортируем по due_date, затем по id для стабильности
+        # NULL-значения due_date могут обрабатываться по-разному в БД,
+        # в SQLite они обычно идут последними.
+        # Можно добавить .asc() или .desc() по желанию.
+        query = query.order_by(Task.due_date.asc()) # Ближайшие сроки вверху
+    else: # По умолчанию или 'id'
+        query = query.order_by(Task.id)# Или asc()
 
-    # Отправляем данные в шаблон
-    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter,
-                           sort_by=sort_by)
+    tasks = query.all()
+
+    # Передача текущей даты и времени в шаблон для проверки просроченных задач
+    current_datetime = datetime.now()
+
+    return render_template('index.html',
+                           tasks=tasks,
+                           status_filter=status_filter,
+                           category_filter=category_filter,
+                           sort_by=sort_by,
+                           current_datetime=current_datetime # <--- Обязательно передать
+                           )
+
 
 
 # Страница регистрации нового пользователя
@@ -145,6 +178,8 @@ def add_task():
         task = Task(
             title=form.title.data,
             description=form.description.data,
+            priority = form.priority.data,
+            due_date = form.due_date.data,
             category=form.category.data or 'General',
             status=form.status.data,
             user_id=current_user.id
@@ -170,6 +205,8 @@ def edit_task(id):
         task.description = form.description.data
         task.category = form.category.data or 'General'
         task.status = form.status.data
+        task.priority = form.priority.data  # Новое поле
+        task.due_date = form.due_date.data  # Новое поле
         db.session.commit()
         flash('Task updated successfully!', 'success')
         return redirect(url_for('main.index'))
@@ -180,7 +217,8 @@ def edit_task(id):
         form.description.data = task.description
         form.category.data = task.category
         form.status.data = task.status
-
+        form.priority.data = task.priority  # Новое поле
+        form.due_date.data = task.due_date  # Новое поле
     return render_template('edit_task.html', form=form, task=task)
 
 

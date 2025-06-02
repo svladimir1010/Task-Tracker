@@ -1,5 +1,6 @@
 # Импорт основных библиотек Flask и расширений
 from flask import Flask
+from flask_migrate import Migrate
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy  # ORM для работы с БД
 from flask_login import LoginManager    # Управление сессиями пользователей
@@ -33,7 +34,7 @@ def create_app():
     # app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-only-key')
     # # Конфигурация подключения к базе данных (используется SQLite)
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
-
+    migrate = Migrate(app, db)
     app.config.from_object(Config)
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Отключаем предупреждение

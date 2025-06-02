@@ -44,3 +44,8 @@ class Task(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     # Внешний ключ: связывает задачу с конкретным пользователем
     # Обязательно указывать, к кому привязана задача
+    priority = db.Column(db.String(20), default='Medium')
+    due_date = db.Column(db.DateTime)
+
+    def __repr__(self):
+        return f'<Task {self.title}>'

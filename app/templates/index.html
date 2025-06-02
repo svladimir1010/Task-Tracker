@@ -7,7 +7,7 @@
     <form method="GET" id="filterForm">
         <div class="row g-3 align-items-end">
             <div class="col-12 col-md-3">
-                <label for="statusFilter" class="form-label fw-medium mb-2">Status</label> {# Добавлен 'for' для доступности #}
+                <label for="statusFilter" class="form-label fw-medium mb-2">Status</label>
                 <select name="status" id="statusFilter" class="form-select" onchange="document.getElementById('filterForm').submit()">
                     <option value="">All Statuses</option>
                     <option value="Not Started" {% if status_filter=='Not Started' %}selected{% endif %}>Not Started</option>
@@ -17,21 +17,24 @@
             </div>
 
             <div class="col-12 col-md-3">
-                <label for="categoryFilter" class="form-label fw-medium mb-2">Category</label> {# Добавлен 'for' для доступности #}
+                <label for="categoryFilter" class="form-label fw-medium mb-2">Category</label>
                 <input type="text" name="category" id="categoryFilter" class="form-control" placeholder="Enter category"
                        value="{{ category_filter or '' }}">
             </div>
 
             <div class="col-12 col-md-2">
-                <label for="sortBySelect" class="form-label fw-medium mb-2">Sort by</label> {# Добавлен 'for' для доступности #}
+                <label for="sortBySelect" class="form-label fw-medium mb-2">Sort by</label>
                 <select name="sort_by" id="sortBySelect" class="form-select" onchange="document.getElementById('filterForm').submit()">
                     <option value="id" {% if sort_by=='id' %}selected{% endif %}>Default</option>
                     <option value="created_at" {% if sort_by=='created_at' %}selected{% endif %}>Date Created</option>
+                    {# Добавляем опции сортировки по priority и due_date #}
+                    <option value="priority" {% if sort_by=='priority' %}selected{% endif %}>Priority</option>
+                    <option value="due_date" {% if sort_by=='due_date' %}selected{% endif %}>Due Date</option>
                 </select>
             </div>
 
-            {# Улучшена адаптивность кнопок: на мобильных они будут занимать всю ширину, на md+ - будут рядом #}
-            <div class="col-12 col-md-4 d-grid gap-2 d-md-flex justify-content-md-end"> {# d-grid для мобильных, d-md-flex для больших #}
+            {# Улучшена адаптивность кнопок #}
+            <div class="col-12 col-md-4 d-grid gap-2 d-md-flex justify-content-md-end">
                 <a href="{{ url_for('main.export_tasks') }}" class="btn btn-outline-success flex-grow-1 d-flex align-items-center justify-content-center">
                     <i class="bi bi-file-earmark-arrow-down me-1"></i> Export CSV
                 </a>
@@ -44,15 +47,14 @@
     </form>
 </div>
 
-{# Можно добавить класс для стилизации списка, если понадобится, например, task-list #}
 <div class="row g-3">
     {% for task in tasks %}
-    <div class="col-12 col-md-6 col-lg-4"> {# Улучшение: каждая задача занимает пол-экрана на md и треть на lg #}
+    <div class="col-12 col-md-6 col-lg-4">
         <div class="card h-100 bg-body-secondary border-0 shadow-sm task-item-card">
-            <div class="card-body p-3 d-flex flex-column"> {# d-flex flex-column для прижатия кнопок вниз #}
+            <div class="card-body p-3 d-flex flex-column">
                 <div class="d-flex align-items-center mb-2">
-                    <h5 class="task-title mb-0 me-2 text-truncate">{{ task.title }}</h5> {# text-truncate для длинных заголовков #}
-                    <span class="badge bg-light text-dark border rounded-pill flex-shrink-0">{{ task.category }}</span> {# flex-shrink-0 чтобы значок не сжимался #}
+                    <h5 class="task-title mb-0 me-2 text-truncate">{{ task.title }}</h5>
+                    <span class="badge bg-light text-dark border rounded-pill flex-shrink-0">{{ task.category }}</span>
                 </div>
 
                 <div class="mb-2">
@@ -61,32 +63,60 @@
                         {% elif task.status == 'In Progress' %}text-warning
                         {% else %}text-success{% endif %}">
                         <i class="bi
-                            {% if task.status == 'Not Started' %}bi-x-circle-fill {# Filled icon for clarity #}
-                            {% elif task.status == 'In Progress' %}bi-arrow-clockwise {# More explicit for "in progress" #}
-                            {% else %}bi-check-circle-fill{% endif %} me-1"></i> {# Filled icon for clarity #}
+                            {% if task.status == 'Not Started' %}bi-x-circle-fill
+                            {% elif task.status == 'In Progress' %}bi-arrow-clockwise
+                            {% else %}bi-check-circle-fill{% endif %} me-1"></i>
                         {{ task.status }}
                     </strong>
                 </div>
 
+                {# Добавляем Priority #}
                 <div class="mb-2 text-muted small">
-                    <i class="bi bi-calendar me-1"></i>{{ task.created_at.strftime('%d %b %Y') }}
+                    <i class="bi bi-exclamation-circle me-1"></i> Priority:
+                    <strong class="
+                        {% if task.priority == 'High' %}text-danger
+                        {% elif task.priority == 'Medium' %}text-warning
+                        {% else %}text-success{% endif %}">
+                        {{ task.priority }}
+                    </strong>
+                </div>
+
+                {# Добавляем Due Date #}
+                <div class="mb-2 text-muted small">
+                    <i class="bi bi-calendar-check me-1"></i> Due Date:
+                    {% if task.due_date %}
+                        {# Отображаем дату и время #}
+                        <strong>{{ task.due_date.strftime('%d %b %Y %H:%M') }}</strong>
+                        {# Опционально: можно добавить индикатор просроченной даты #}
+                        {# Примечание: Для now нужно передать current_datetime=datetime.now() из вашего Flask-маршрута index() #}
+                        {% if task.due_date < current_datetime and task.status != 'Completed' %}
+                            <span class="text-danger">(Overdue)</span>
+                        {% endif %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </div>
+
+                <div class="mb-2 text-muted small">
+                    <i class="bi bi-calendar me-1"></i> Created:
+                    <strong>{{ task.created_at.strftime('%d %b %Y') }}</strong>
                 </div>
 
                 {% if task.description %}
-                <div class="mt-3 flex-grow-1"> {# flex-grow-1, чтобы описание занимало все доступное пространство #}
-                    <p class="mb-0 text-break">{{ task.description }}</p> {# text-break для длинных слов без пробелов #}
+                <div class="mt-3 flex-grow-1">
+                    <p class="mb-0 text-break">{{ task.description }}</p>
                 </div>
                 {% endif %}
 
-                <div class="d-flex gap-2 mt-auto pt-3 border-top border-secondary-subtle"> {# mt-auto прижимает кнопки к низу, pt-3 и border-top для визуального разделения #}
+                <div class="d-flex gap-2 mt-auto pt-3 border-top border-secondary-subtle">
                     <a href="{{ url_for('main.edit_task', id=task.id) }}"
-                       class="btn btn-sm btn-outline-warning d-flex align-items-center flex-grow-1 justify-content-center"> {# flex-grow-1 и justify-content-center для адаптации ширины #}
+                       class="btn btn-sm btn-outline-warning d-flex align-items-center flex-grow-1 justify-content-center">
                         <i class="bi bi-pencil me-1"></i> Edit
                     </a>
 
-                    <form action="{{ url_for('main.delete_task', id=task.id) }}" method="POST" class="d-inline flex-grow-1"> {# flex-grow-1 для формы #}
+                    <form action="{{ url_for('main.delete_task', id=task.id) }}" method="POST" class="d-inline flex-grow-1">
                         <button type="submit"
-                                class="btn btn-sm btn-outline-danger w-100 d-flex align-items-center justify-content-center" {# w-100 для кнопки внутри формы #}
+                                class="btn btn-sm btn-outline-danger w-100 d-flex align-items-center justify-content-center"
                                 onclick="return confirm('Are you sure?')">
                             <i class="bi bi-trash me-1"></i> Delete
                         </button>

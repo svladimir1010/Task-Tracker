@@ -2,8 +2,9 @@
 from flask_wtf import FlaskForm
 # Импорт полей формы
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
+from wtforms import DateTimeField
 # Импорт валидаторов для проверки корректности данных
-from wtforms.validators import DataRequired, Length, Email, ValidationError  # Email пока не используется, но пригодится, если добавишь поле e-mail
+from wtforms.validators import DataRequired, Length, Optional, Email, ValidationError  # Email пока не используется, но пригодится, если добавишь поле e-mail
 # Импорт модели User для проверки уникальности username/email
 from app.models import User
 
@@ -39,6 +40,8 @@ class LoginForm(FlaskForm):
 class TaskForm(FlaskForm):
     # Название задачи — обязательно, от 1 до 100 символов
     title = StringField('Title', validators=[DataRequired(), Length(min=1, max=100)])
+    priority = SelectField('Priority', choices=[('High', 'High'), ('Medium', 'Medium'), ('Low', 'Low')], default='Medium')
+    due_date = DateTimeField('Due Date', format='%Y-%m-%dT%H:%M', validators=[Optional()])
     # Описание задачи — не обязательно, максимум 500 символов
     description = TextAreaField('Description', validators=[Length(max=500)])
     # Статус задачи — выпадающий список с 3 вариантами. Обязателен.
@@ -55,6 +58,7 @@ class TaskForm(FlaskForm):
     category = StringField('Category', validators=[Length(max=50)])
     # Кнопка сохранения
     submit = SubmitField('Save Task')
+
 
 
 
