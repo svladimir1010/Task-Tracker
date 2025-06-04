@@ -141,3 +141,20 @@ html, .navbar, .offcanvas, .footer, .alert, .table {
     box-shadow: 0 1px 4px rgba(255,255,255,0.1);
     background-color: #2a2a2a;
 }
+
+
+ /* Адаптивные стили, больше компактности*/
+@media (max-width: 768px) {
+    .form-select, .form-control {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+.border-danger {
+    border-width: 2px !important;
+}

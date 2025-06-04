@@ -19,58 +19,56 @@ bp = Blueprint('main', __name__)
 @bp.route('/')
 @login_required
 def index():
-    # 1. Получение параметров фильтрации и сортировки
-    status_filter = request.args.get('status', '')
-    category_filter = request.args.get('category', '')
-    sort_by = request.args.get('sort_by', 'id') # По умолчанию сортируем по id
+    # Получаем параметры фильтрации и сортировки из запроса
+    status_filter = request.args.get('status')
+    category_filter = request.args.get('category')
+    sort_by = request.args.get('sort_by', 'id')  # По умолчанию сортировка по ID
+    sort_order = request.args.get('sort_order', 'asc')  # По умолчанию возрастающий порядок
 
-    # Инициализация базового запроса для задач текущего пользователя
+    # Формируем базовый запрос для задач текущего пользователя
     query = Task.query.filter_by(user_id=current_user.id)
 
-    # 2. Применение фильтрации
+    # Применяем фильтр по статусу, если он указан
     if status_filter:
         query = query.filter_by(status=status_filter)
 
+    # Применяем фильтр по категории, если она указана
     if category_filter:
-        # Используем .ilike() для поиска подстроки без учета регистра
-        query = query.filter(Task.category.ilike(f'%{category_filter}%'))
+        query = query.filter_by(category=category_filter)
 
-    # 3. Применение сортировки
-    if sort_by == 'created_at':
-        query = query.order_by(Task.created_at.desc()) # Свежие задачи вверху
-    elif sort_by == 'priority':
-        # Для сортировки по приоритету нужно преобразовать строковые значения
-        # в порядок. Используем CASE-выражение для SQL.
-        # Если у вас есть Enum для Priority, то это будет проще.
+    # Логика сортировки в зависимости от выбранного критерия
+    if sort_by == 'priority':
+        # Сортировка по приоритету с использованием CASE для кастомного порядка
         query = query.order_by(
             db.case(
                 (Task.priority == 'High', 1),
                 (Task.priority == 'Medium', 2),
                 (Task.priority == 'Low', 3),
-                else_=4 # Для любых других значений, если есть
+                else_=4  # Для любых других значений, если есть
             )
         )
     elif sort_by == 'due_date':
-        # Сначала сортируем по due_date, затем по id для стабильности
-        # NULL-значения due_date могут обрабатываться по-разному в БД,
-        # в SQLite они обычно идут последними.
-        # Можно добавить .asc() или .desc() по желанию.
-        query = query.order_by(Task.due_date.asc()) # Ближайшие сроки вверху
-    else: # По умолчанию или 'id'
-        query = query.order_by(Task.id)# Или asc()
+        # Сортировка по дате выполнения с учётом направления
+        order = Task.due_date.asc() if sort_order == 'asc' else Task.due_date.desc()
+        query = query.order_by(order, Task.id)  # Добавляем ID для стабильности
+    elif sort_by == 'created_at':
+        # Сортировка по дате создания
+        order = Task.created_at.asc() if sort_order == 'asc' else Task.created_at.desc()
+        query = query.order_by(order)
+    else:  # По умолчанию или 'id'
+        # Сортировка по ID
+        order = Task.id.asc() if sort_order == 'asc' else Task.id.desc()
+        query = query.order_by(order)
 
+    # Выполняем запрос и получаем список задач
     tasks = query.all()
 
-    # Передача текущей даты и времени в шаблон для проверки просроченных задач
-    current_datetime = datetime.now()
+    # Текущее время для проверки просроченных задач
+    current_datetime = datetime.utcnow()
 
-    return render_template('index.html',
-                           tasks=tasks,
-                           status_filter=status_filter,
-                           category_filter=category_filter,
-                           sort_by=sort_by,
-                           current_datetime=current_datetime # <--- Обязательно передать
-                           )
+    # Передаём данные в шаблон
+    return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter,
+                           sort_by=sort_by, sort_order=sort_order, current_datetime=current_datetime)
 
 
 
