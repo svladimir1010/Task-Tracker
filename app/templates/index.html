@@ -10,7 +10,7 @@
         <div class="row g-2 align-items-end">
             <!-- Поле выбора статуса задачи -->
             <div class="col-12 col-sm-6 col-md-3">
-                <label for="statusFilter" class="form-label fw-medium mb-2">Status</label>
+                <label for="statusFilter" class="form-label fw-medium mb-2"> <i class="bi bi-check-circle"></i> Status</label>
                 <select name="status" id="statusFilter" class="form-select" onchange="document.getElementById('filterForm').submit()">
                     <option value="">All Statuses</option>
                     <option value="Not Started" {% if status_filter=='Not Started' %}selected{% endif %}>Not Started</option>
@@ -21,14 +21,14 @@
 
             <!-- Поле ввода категории задачи -->
             <div class="col-12 col-sm-6 col-md-3">
-                <label for="categoryFilter" class="form-label fw-medium mb-2">Category</label>
+                <label for="categoryFilter" class="form-label fw-medium mb-2"> <i class="bi bi-tag"></i> Category</label>
                 <input type="text" name="category" id="categoryFilter" class="form-control" placeholder="Enter category"
                        value="{{ category_filter or '' }}">
             </div>
 
             <!-- Поле выбора приоритета для фильтрации -->
             <div class="col-12 col-sm-6 col-md-2">
-                <label for="priorityFilter" class="form-label fw-medium mb-2">Priority</label>
+                <label for="priorityFilter" class="form-label fw-medium mb-2"> <i class="bi bi-exclamation-circle"></i> Priority</label>
                 <select name="priority" id="priorityFilter" class="form-select" onchange="document.getElementById('filterForm').submit()">
                     <option value="">All Priorities</option>
                     <option value="High" {% if request.args.get('priority') == 'High' %}selected{% endif %}>High</option>
