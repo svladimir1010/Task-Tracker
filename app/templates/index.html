@@ -26,6 +26,17 @@
                        value="{{ category_filter or '' }}">
             </div>
 
+            <!-- Поле выбора приоритета для фильтрации -->
+            <div class="col-12 col-sm-6 col-md-2">
+                <label for="priorityFilter" class="form-label fw-medium mb-2">Priority</label>
+                <select name="priority" id="priorityFilter" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                    <option value="">All Priorities</option>
+                    <option value="High" {% if request.args.get('priority') == 'High' %}selected{% endif %}>High</option>
+                    <option value="Medium" {% if request.args.get('priority') == 'Medium' %}selected{% endif %}>Medium</option>
+                    <option value="Low" {% if request.args.get('priority') == 'Low' %}selected{% endif %}>Low</option>
+                </select>
+            </div>
+
             <!-- Поле выбора критерия сортировки -->
             <div class="col-12 col-sm-6 col-md-2">
                 <label for="sortBySelect" class="form-label fw-medium mb-2">Sort by</label>
@@ -77,6 +88,7 @@
         // Сбрасываем все поля формы на значения по умолчанию
         document.getElementById('statusFilter').value = '';
         document.getElementById('categoryFilter').value = '';
+        document.getElementById('priorityFilter').value = '';  // Сброс фильтра по приоритету
         document.getElementById('sortBySelect').value = 'id';
         document.getElementById('sortOrderSelect').value = 'asc';
         document.getElementById('filterForm').submit();
@@ -121,7 +133,7 @@
                     </strong>
                 </div>
 
-                <!-- Срок выполнения задачи с индикатором просрочки -->
+                <!-- Срок выполнения задачи с индикатором просрочки (красная рамка и текст) -->
                 <div class="mb-2 text-muted small {% if task.due_date and task.due_date < current_datetime and task.status != 'Completed' %}border border-danger rounded p-1{% endif %}">
                     <i class="bi bi-calendar-check me-1"></i> Due Date:
                     {% if task.due_date %}

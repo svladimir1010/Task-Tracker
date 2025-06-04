@@ -22,6 +22,7 @@ def index():
     # Получаем параметры фильтрации и сортировки из запроса
     status_filter = request.args.get('status')
     category_filter = request.args.get('category')
+    priority_filter = request.args.get('priority')  # получение фильтра по приоритету
     sort_by = request.args.get('sort_by', 'id')  # По умолчанию сортировка по ID
     sort_order = request.args.get('sort_order', 'asc')  # По умолчанию возрастающий порядок
 
@@ -35,6 +36,10 @@ def index():
     # Применяем фильтр по категории, если она указана
     if category_filter:
         query = query.filter_by(category=category_filter)
+
+    # Применяем фильтр по приоритету, если он указан
+    if priority_filter:
+        query = query.filter_by(priority=priority_filter)
 
     # Логика сортировки в зависимости от выбранного критерия
     if sort_by == 'priority':
@@ -68,7 +73,7 @@ def index():
 
     # Передаём данные в шаблон
     return render_template('index.html', tasks=tasks, status_filter=status_filter, category_filter=category_filter,
-                           sort_by=sort_by, sort_order=sort_order, current_datetime=current_datetime)
+                           sort_by=sort_by, priority_filter=priority_filter, sort_order=sort_order, current_datetime=current_datetime)
 
 
 
