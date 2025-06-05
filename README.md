@@ -34,6 +34,8 @@ Task Tracker — веб-приложение для управления зад�
     * **Срок выполнения** (due_date): дата и время завершения задачи.
 - Фильтрация задач по приоритету и сроку выполнения.
 - Добавлена кнопка "Сбросить фильтры" для очистки всех примененных фильтров.
+- Добавлены иконки в панель фильтров для улучшения визуального восприятия.
+- Реализован поиск по ключевым словам в заголовках и описаниях задач.
 
 
 
@@ -54,8 +56,8 @@ Task Tracker — веб-приложение для управления зад�
 ![Register dark Page](screenshots/register_dark.png)
 ![Login light Page](screenshots/login_light.png)
 ![Main Page](screenshots/main.png)
+![Main tablet Page](screenshots/main_tablet.png)
 ![Main mobile Page](screenshots/main_mobile.png)
-![Main sort_by Page](screenshots/sort_by.png)
 ![Add light Page](screenshots/add_light.png)
 ![Edit dark Page](screenshots/edit_dark.png)
 ![Stats dark Page](screenshots/stats_dark.png)

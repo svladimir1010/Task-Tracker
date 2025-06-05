@@ -1,17 +1,20 @@
-{% extends "base.html" %}
+{% extends "base.html" %}  {# Наследование базового шаблона #}
 
-{% block title %}Task Tracker{% endblock %}
+{% block title %}Task Tracker{% endblock %}  {# Заголовок страницы #}
 
 {% block content %}
-<!-- Основной контейнер формы фильтров с закруглёнными углами и тенью -->
 <div class="bg-body-secondary rounded-3 p-3 shadow-sm mb-4">
-    <form method="GET" id="filterForm">
-        <!-- Первый ряд: фильтры и сортировка -->
+    <form method="GET" id="filterForm">  {# Форма фильтров для задач #}
         <div class="row g-2 align-items-end">
-            <!-- Поле выбора статуса задачи -->
-            <div class="col-12 col-sm-6 col-md-3">
+
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2"> {# Расширенный поиск по заголовку/описанию #}
+                <label for="searchFilter" class="form-label fw-medium mb-2"><i class="bi bi-search me-1"></i>Search</label>
+                <input type="text" name="search" id="searchFilter" class="form-control" placeholder="Search title/description" value="{{ request.args.get('search', '') }}">
+            </div>
+            
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2">
                 <label for="statusFilter" class="form-label fw-medium mb-2"> <i class="bi bi-check-circle"></i> Status</label>
-                <select name="status" id="statusFilter" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                <select name="status" id="statusFilter" class="form-select">
                     <option value="">All Statuses</option>
                     <option value="Not Started" {% if status_filter=='Not Started' %}selected{% endif %}>Not Started</option>
                     <option value="In Progress" {% if status_filter=='In Progress' %}selected{% endif %}>In Progress</option>
@@ -19,17 +22,15 @@
                 </select>
             </div>
 
-            <!-- Поле ввода категории задачи -->
-            <div class="col-12 col-sm-6 col-md-3">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2">
                 <label for="categoryFilter" class="form-label fw-medium mb-2"> <i class="bi bi-tag"></i> Category</label>
                 <input type="text" name="category" id="categoryFilter" class="form-control" placeholder="Enter category"
                        value="{{ category_filter or '' }}">
             </div>
 
-            <!-- Поле выбора приоритета для фильтрации -->
-            <div class="col-12 col-sm-6 col-md-2">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2">
                 <label for="priorityFilter" class="form-label fw-medium mb-2"> <i class="bi bi-exclamation-circle"></i> Priority</label>
-                <select name="priority" id="priorityFilter" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                <select name="priority" id="priorityFilter" class="form-select">
                     <option value="">All Priorities</option>
                     <option value="High" {% if request.args.get('priority') == 'High' %}selected{% endif %}>High</option>
                     <option value="Medium" {% if request.args.get('priority') == 'Medium' %}selected{% endif %}>Medium</option>
@@ -37,10 +38,11 @@
                 </select>
             </div>
 
-            <!-- Поле выбора критерия сортировки -->
-            <div class="col-12 col-sm-6 col-md-2">
+
+
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2"> {# Сортировка по полям #}
                 <label for="sortBySelect" class="form-label fw-medium mb-2">Sort by</label>
-                <select name="sort_by" id="sortBySelect" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                <select name="sort_by" id="sortBySelect" class="form-select">
                     <option value="id" {% if sort_by=='id' %}selected{% endif %}>Default</option>
                     <option value="created_at" {% if sort_by=='created_at' %}selected{% endif %}>Date Created</option>
                     <option value="priority" {% if sort_by=='priority' %}selected{% endif %}>Priority</option>
@@ -48,92 +50,96 @@
                 </select>
             </div>
 
-            <!-- Поле выбора направления сортировки -->
-            <div class="col-12 col-sm-6 col-md-2">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2"> {# Порядок сортировки: по возрастанию/убыванию #}
                 <label for="sortOrderSelect" class="form-label fw-medium mb-2">Order</label>
-                <select name="sort_order" id="sortOrderSelect" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                <select name="sort_order" id="sortOrderSelect" class="form-select">
                     <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
                     <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
                 </select>
             </div>
         </div>
 
-        <!-- Второй ряд: кнопки действий -->
-        <div class="row g-2 mt-2">
-            <!-- Кнопка сброса фильтров -->
-            <div class="col-12 col-sm-6 col-md-2">
-                <button type="button" class="btn btn-outline-secondary w-100" onclick="resetFilters()">Reset Filters</button>
+        <div class="row g-2 mt-3"> {# Блок кнопок действий #}
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 d-grid">
+                <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filters
+                </button>
             </div>
 
-            <!-- Кнопка экспорта в CSV -->
-            <div class="col-12 col-sm-6 col-md-2">
-                <a href="{{ url_for('main.export_tasks') }}" class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 d-grid">
+                <a href="{{ url_for('main.export_tasks') }}" class="btn btn-outline-success">
                     <i class="bi bi-file-earmark-arrow-down me-1"></i> Export CSV
                 </a>
             </div>
 
-            <!-- Кнопка добавления задачи -->
-            <div class="col-12 col-sm-6 col-md-2">
-                <a href="{{ url_for('main.add_task') }}" class="btn btn-primary w-100 d-flex align-items-center justify-content-center">
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 d-grid">
+                <a href="{{ url_for('main.add_task') }}" class="btn btn-primary">
                     <i class="bi bi-plus-circle me-1"></i> Add Task
                 </a>
+            </div>
+
+            <div class="col-12 col-sm-12 col-md-3 col-lg-6 d-grid d-md-flex justify-content-md-end">
+                 <button type="submit" class="btn btn-info">
+                    <i class="bi bi-funnel me-1"></i> Apply Filters
+                </button>
             </div>
         </div>
     </form>
 </div>
 
-<!-- Скрипт для сброса фильтров -->
 <script>
     function resetFilters() {
-        // Сбрасываем все поля формы на значения по умолчанию
+        // Сброс всех фильтров формы
         document.getElementById('statusFilter').value = '';
         document.getElementById('categoryFilter').value = '';
-        document.getElementById('priorityFilter').value = '';  // Сброс фильтра по приоритету
+        document.getElementById('priorityFilter').value = '';
+        document.getElementById('searchFilter').value = '';
         document.getElementById('sortBySelect').value = 'id';
         document.getElementById('sortOrderSelect').value = 'asc';
         document.getElementById('filterForm').submit();
     }
+
+    // Автоприменение select-фильтров при изменении
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+        document.getElementById('priorityFilter').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+        document.getElementById('sortBySelect').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+        document.getElementById('sortOrderSelect').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+    });
 </script>
 
-<!-- Сетка для отображения задач в виде карточек -->
-<div class="row g-3">
+<div class="row g-3">  {# Карточки задач #}
     {% for task in tasks %}
     <div class="col-12 col-md-6 col-lg-4">
-        <!-- Карточка задачи с фиксированной высотой и тенью -->
         <div class="card h-100 bg-body-secondary border-0 shadow-sm task-item-card">
             <div class="card-body p-3 d-flex flex-column">
-                <!-- Заголовок и категория задачи -->
                 <div class="d-flex align-items-center mb-2">
                     <h5 class="task-title mb-0 me-2 text-truncate">{{ task.title }}</h5>
                     <span class="badge bg-light text-dark border rounded-pill flex-shrink-0">{{ task.category }}</span>
                 </div>
 
-                <!-- Статус задачи с цветовым индикатором -->
                 <div class="mb-2">
-                    <strong class="
-                        {% if task.status == 'Not Started' %}text-danger
-                        {% elif task.status == 'In Progress' %}text-warning
-                        {% else %}text-success{% endif %}">
-                        <i class="bi
-                            {% if task.status == 'Not Started' %}bi-x-circle-fill
-                            {% elif task.status == 'In Progress' %}bi-arrow-clockwise
-                            {% else %}bi-check-circle-fill{% endif %} me-1"></i>
+                    <strong class="{% if task.status == 'Not Started' %}text-danger{% elif task.status == 'In Progress' %}text-warning{% else %}text-success{% endif %}">
+                        <i class="bi {% if task.status == 'Not Started' %}bi-x-circle-fill{% elif task.status == 'In Progress' %}bi-arrow-clockwise{% else %}bi-check-circle-fill{% endif %} me-1"></i>
                         {{ task.status }}
                     </strong>
                 </div>
 
-                <!-- Приоритет задачи с цветовым индикатором -->
                 <div class="mb-2 text-muted small">
                     <i class="bi bi-exclamation-circle me-1"></i> Priority:
-                    <strong class="
-                        {% if task.priority == 'High' %}text-danger
-                        {% elif task.priority == 'Medium' %}text-warning
-                        {% else %}text-success{% endif %}">
+                    <strong class="{% if task.priority == 'High' %}text-danger{% elif task.priority == 'Medium' %}text-warning{% else %}text-success{% endif %}">
                         {{ task.priority }}
                     </strong>
                 </div>
 
-                <!-- Срок выполнения задачи с индикатором просрочки (красная рамка и текст) -->
                 <div class="mb-2 text-muted small {% if task.due_date and task.due_date < current_datetime and task.status != 'Completed' %}border border-danger rounded p-1{% endif %}">
                     <i class="bi bi-calendar-check me-1"></i> Due Date:
                     {% if task.due_date %}
@@ -146,20 +152,17 @@
                     {% endif %}
                 </div>
 
-                <!-- Дата создания задачи -->
                 <div class="mb-2 text-muted small">
                     <i class="bi bi-calendar me-1"></i> Created:
                     <strong>{{ task.created_at.strftime('%d %b %Y') }}</strong>
                 </div>
 
-                <!-- Описание задачи, если оно есть -->
                 {% if task.description %}
                 <div class="mt-3 flex-grow-1">
                     <p class="mb-0 text-break">{{ task.description }}</p>
                 </div>
                 {% endif %}
 
-                <!-- Кнопки редактирования и удаления, выровнены по нижнему краю -->
                 <div class="d-flex gap-2 mt-auto pt-3 border-top border-secondary-subtle">
                     <a href="{{ url_for('main.edit_task', id=task.id) }}"
                        class="btn btn-sm btn-outline-warning d-flex align-items-center flex-grow-1 justify-content-center">
@@ -178,7 +181,6 @@
         </div>
     </div>
     {% else %}
-    <!-- Сообщение, если задач нет -->
     <div class="col-12">
         <div class="alert alert-info text-center py-4">
             <i class="bi bi-inbox fs-2 mb-3"></i>

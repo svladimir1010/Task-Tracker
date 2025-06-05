@@ -25,9 +25,18 @@ def index():
     priority_filter = request.args.get('priority')  # получение фильтра по приоритету
     sort_by = request.args.get('sort_by', 'id')  # По умолчанию сортировка по ID
     sort_order = request.args.get('sort_order', 'asc')  # По умолчанию возрастающий порядок
+    search_filter = request.args.get('search')
 
     # Формируем базовый запрос для задач текущего пользователя
     query = Task.query.filter_by(user_id=current_user.id)
+
+    # Если есть фильтр по поиску, применяем его
+    if search_filter:
+        query = query.filter(
+            (Task.title.ilike(f'%{search_filter}%')) |
+            (Task.description.ilike(f'%{search_filter}%'))
+        )
+
 
     # Применяем фильтр по статусу, если он указан
     if status_filter:
@@ -266,13 +275,3 @@ def export_tasks():
         ])
     output.seek(0)
     return Response(output, mimetype='text/csv', headers={'Content-Disposition': 'attachment;filename=tasks.csv'})
-
-# # Обработчик ошибки 404 (страница не найдена)
-# @bp.errorhandler(404)
-# def page_not_found(e):
-#     return render_template('404.html'), 404
-#
-# # Обработчик ошибки 500 (внутренняя ошибка сервера)
-# @bp.errorhandler(500)
-# def internal_server_error(e):
-#     return render_template('500.html'), 500
