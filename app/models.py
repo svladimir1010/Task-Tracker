@@ -14,17 +14,18 @@ class User(UserMixin, db.Model):
     # Имя пользователя — обязательно и уникально, максимум 20 символов
     email = db.Column(db.String(120), unique=True, nullable=False)  # Новое поле
     # Email — тоже обязательный и уникальный (можно будет использовать для подтверждения или восстановления доступа)
-    password = db.Column(db.String(60), nullable=False)
+    password_hash = db.Column(db.String(60), nullable=False)
     # Хеш пароля (а не сам пароль!)
     tasks = db.relationship('Task', backref='user', lazy=True)
     # Связь один-ко-многим: один пользователь → много задач
     # backref='user' создаёт у задачи ссылку на пользователя (`task.user`)
     # lazy=True означает, что задачи будут загружаться при обращении, а не сразу
 
-    # Новое поле для подтверждения email
-    confirmed = db.Column(db.Boolean, default=True) # По умолчанию пользователь считается подтверждённым
-    def get_confirmation_token(self):
-        return generate_confirmation_token(self.email) # Генерация токена для подтверждения email
+    timezone = db.Column(db.String(64), default='UTC')  # Имя часового пояса по IANA, например 'Europe/Kyiv'
+    # поле для подтверждения email
+    confirmed = db.Column(db.Boolean, default=False) # По умолчанию пользователь считается подтверждённым
+    # def get_confirmation_token(self):
+    #     return generate_confirmation_token(self.email) # Генерация токена для подтверждения email
 
 
 class Task(db.Model):
@@ -44,8 +45,16 @@ class Task(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     # Внешний ключ: связывает задачу с конкретным пользователем
     # Обязательно указывать, к кому привязана задача
+    # Приоритет задачи — по умолчанию "Medium"
     priority = db.Column(db.String(20), default='Medium')
+    # дата выполнения задачи
     due_date = db.Column(db.DateTime)
+    # напоминание о задаче
+    reminder_date = db.Column(db.DateTime, nullable=True)
+
+    reminder_sent = db.Column(db.Boolean, default=False, nullable=False)  # Флаг, отправлено ли напоминание
+    reminder_sent_at = db.Column(db.DateTime, nullable=True)  # Время, когда напоминание было отправлено (опционально, для логов)
 
     def __repr__(self):
         return f'<Task {self.title}>'
+

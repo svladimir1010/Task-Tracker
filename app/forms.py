@@ -1,7 +1,7 @@
 # Импорт базового класса формы из Flask-WTF
 from flask_wtf import FlaskForm
 # Импорт полей формы
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, DateTimeLocalField, SubmitField, TextAreaField, SelectField
 from wtforms import DateTimeField
 # Импорт валидаторов для проверки корректности данных
 from wtforms.validators import DataRequired, Length, Optional, Email, ValidationError  # Email пока не используется, но пригодится, если добавишь поле e-mail
@@ -29,7 +29,6 @@ class RegisterForm(FlaskForm):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered')
 
-
 class LoginForm(FlaskForm):
     # Те же поля, (без подтверждения пароля)
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
@@ -56,6 +55,12 @@ class TaskForm(FlaskForm):
     )
     # Категория задачи — не обязательна, максимум 50 символов
     category = StringField('Category', validators=[Length(max=50)])
+
+    # Новое поле для даты напоминания
+    reminder_date = DateTimeLocalField(
+        'Reminder Date', format='%Y-%m-%dT%H:%M', validators=[],
+             render_kw={'type': 'datetime-local'})  # Новое поле
+
     # Кнопка сохранения
     submit = SubmitField('Save Task')
 

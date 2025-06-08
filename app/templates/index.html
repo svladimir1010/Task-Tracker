@@ -11,7 +11,7 @@
                 <label for="searchFilter" class="form-label fw-medium mb-2"><i class="bi bi-search me-1"></i>Search</label>
                 <input type="text" name="search" id="searchFilter" class="form-control" placeholder="Search title/description" value="{{ request.args.get('search', '') }}">
             </div>
-            
+
             <div class="col-12 col-sm-6 col-md-3 col-lg-2">
                 <label for="statusFilter" class="form-label fw-medium mb-2"> <i class="bi bi-check-circle"></i> Status</label>
                 <select name="status" id="statusFilter" class="form-select">
@@ -37,8 +37,6 @@
                     <option value="Low" {% if request.args.get('priority') == 'Low' %}selected{% endif %}>Low</option>
                 </select>
             </div>
-
-
 
             <div class="col-12 col-sm-6 col-md-3 col-lg-2"> {# Сортировка по полям #}
                 <label for="sortBySelect" class="form-label fw-medium mb-2">Sort by</label>
@@ -117,7 +115,7 @@
 </script>
 
 <div class="row g-3">  {# Карточки задач #}
-    {% for task in tasks %}
+    {% for task in tasks.items %} {# Если используете paginate, то tasks.items, если all(), то просто tasks #}
     <div class="col-12 col-md-6 col-lg-4">
         <div class="card h-100 bg-body-secondary border-0 shadow-sm task-item-card">
             <div class="card-body p-3 d-flex flex-column">
@@ -140,22 +138,56 @@
                     </strong>
                 </div>
 
-                <div class="mb-2 text-muted small {% if task.due_date and task.due_date < current_datetime and task.status != 'Completed' %}border border-danger rounded p-1{% endif %}">
+                {# ИЗМЕНЕННЫЙ БЛОК ДЛЯ DUE DATE #}
+                {# Сначала преобразуем task.due_date в aware UTC datetime для сравнения и отображения #}
+                {% set task_due_date_aware_utc = task.due_date.replace(tzinfo=timezone_utc) if task.due_date else None %}
+
+                <div class="mb-2 text-muted small
+                    {% if task_due_date_aware_utc and task_due_date_aware_utc < now_utc and task.status != 'Completed' %}
+                        border border-danger rounded p-1
+                    {% endif %}">
                     <i class="bi bi-calendar-check me-1"></i> Due Date:
-                    {% if task.due_date %}
-                        <strong>{{ task.due_date.strftime('%d %b %Y %H:%M') }}</strong>
-                        {% if task.due_date < current_datetime and task.status != 'Completed' %}
+                    {% if task_due_date_aware_utc %} {# Используем новую aware переменную #}
+                        <strong>{{ task_due_date_aware_utc.astimezone(local_tz).strftime('%d %b %Y %H:%M') }}</strong>
+
+                        {# Логика для "Overdue" - теперь использует aware-aware сравнение #}
+                        {% if task_due_date_aware_utc < now_utc and task.status != 'Completed' %}
                             <span class="text-danger"><i class="bi bi-exclamation-triangle me-1"></i>(Overdue)</span>
                         {% endif %}
                     {% else %}
                         N/A
                     {% endif %}
                 </div>
+                {# КОНЕЦ ИЗМЕНЕННОГО БЛОКА ДЛЯ DUE DATE #}
 
                 <div class="mb-2 text-muted small">
                     <i class="bi bi-calendar me-1"></i> Created:
+                    {# created_at обычно не нужно конвертировать, если оно просто для информации и не участвует в сравнениях #}
                     <strong>{{ task.created_at.strftime('%d %b %Y') }}</strong>
                 </div>
+
+                 {# --- ИЗМЕНЕННЫЙ БЛОК ДЛЯ REMINDER DATE --- #}
+                {# Сначала преобразуем task.reminder_date в aware UTC datetime для сравнения и отображения #}
+                {% set task_reminder_date_aware_utc = task.reminder_date.replace(tzinfo=timezone_utc) if task.reminder_date else None %}
+
+                <div class="mb-2 text-muted small">
+                    <i class="bi bi-bell me-1"></i> Reminder:
+                    {% if task_reminder_date_aware_utc %} {# Используем новую aware переменную #}
+                        <strong>{{ task_reminder_date_aware_utc.astimezone(local_tz).strftime('%d %b %Y %H:%M') }}</strong>
+
+                        {# Логика для статуса напоминания - теперь использует aware-aware сравнение #}
+                        {% if task.reminder_sent %}
+                            <span class="badge bg-success ms-2">Sent</span>
+                        {% elif task_reminder_date_aware_utc and task_reminder_date_aware_utc <= now_utc %}
+                            <span class="badge bg-warning ms-2">Pending</span>
+                        {% else %}
+                            <span class="badge bg-info ms-2">Upcoming</span>
+                        {% endif %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </div>
+                {# --- КОНЕЦ ИЗМЕНЕННОГО БЛОКА --- #}
 
                 {% if task.description %}
                 <div class="mt-3 flex-grow-1">

@@ -82,7 +82,21 @@
                    {% endif %}
                 </div>
 
-                {# КОНЕЦ НОВЫХ ПОЛЕЙ #}
+                <div class="mb-4">
+                   <label for="reminder" class="form-label fw-medium mb-2 ">
+                      <i class="bi bi-hourglass me-1"></i> Reminder
+                   </label>
+                   {{ form.reminder_date(class="form-control form-control-lg py-3", id="reminder", placeholder="Enter
+                   reminder date") }}
+                   {% if form.reminder_date.errors %}
+                   <div class="text-danger small mt-1">
+                      {% for error in form.reminder_date.errors %}
+                      <span>{{ error }}</span>
+                      {% endfor %}
+                   </div>
+                   {% endif %}
+                </div>
+
 
                 <div class="mb-4">
                    <label for="status" class="form-label fw-medium mb-2 ">
